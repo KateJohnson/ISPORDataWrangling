@@ -17,4 +17,4 @@ library(usethis)
 usethis::use_course("https://github.com/KateJohnson/ISPORDataWrangling/archive/master.zip")
 ```
 
-![](https://github.com/KateJohnson/ISPORDataWrangling/issues/1)
+![](https://user-images.githubusercontent.com/27313003/54243498-f7f8fb80-44e5-11e9-8815-5c1f7faaa8b9.png)
