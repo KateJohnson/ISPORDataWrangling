@@ -17,3 +17,5 @@ library(usethis)
 usethis::use_course("https://github.com/KateJohnson/ISPORDataWrangling/archive/master.zip")
 ```
 
+
+![]("/Users/katejohnson/Google Drive/Workshops/ISPOR/DataWrangling/ISPORDataWrangling/tidyverse.png⁩")
