@@ -1,8 +1,0 @@
----
-title: "Data Wrangling in R"
-author: "Kate Johnson"
-date: '2019-03-12'
-output: html_document
----
-
-Does this work?
