@@ -1,0 +1,171 @@
+---
+title: "Data Wrangling in R for Health Outcomes Research"
+output: html_document
+---
+
+The objective of this workshop is to provide an introduction to data wrangling in R using the tidyverse. By the end, you should be able to:
+
+1. Perform simple data manipulations using the 5 dplyr verbs (`select`, `filter`, `arrange`, `mutate`, `summarise`, `group_by`)
+2. Chain these operations together using piping (`%>%`)
+3. Join datasets together using the set of `join` functions
+
+
+## Goal 1: Setting up our workflow
+
+First, let's load the [tidyverse](https://www.tidyverse.org/), which is an "an opinionated collection of R packages designed for data science. All packages share an underlying design philosophy, grammar, and data structures."
+
+```{r}
+install.packages("tidyverse")
+library(tidyverse)
+# some other packages that we'll need down the road
+install.packages("here")
+library(here)
+install.packages("readr")
+library(readr)
+```
+
+
+We're going to work with a dataset from the National Institute of Diabetes and Digestive and Kidney Diseases. The dataset was compiled for the objective of developing a model to predict the occurence of diabetes mellitus using a variety of diagnostic measures. You can find more details on the data [here](https://www.kaggle.com/uciml/pima-indians-diabetes-database).
+
+Let's load the data into R and check it out:
+
+```{r}
+diabetes <- read_csv(here("Data/diabetes.csv"))
+```
+
+
+(Aside: Check out this [this](https://www.tidyverse.org/articles/2017/12/workflow-vs-script/) blogpost by Jenny Bryan for best practices for getting your data into R. Hint: if you use this 'rm(list=ls())' she will "set your computer on :fire:" 
+
+
+So what do we have here?
+
+```{r}
+str(diabetes)
+```
+
+Let's get some basic summaries of each of the variables so that we have an idea of what's in there:
+
+```{r}
+summary(diabetes)
+```
+
+What are some things we might want to know about this dataset? Let's list them here:
+
+  - ...
+
+
+```{r}
+
+```
+
+
+## Topic 2: Simple data manipulations using dplyr
+
+(This summary is taken from [STAT 545](http://stat545.com/) class notes.)
+
+The six main dplyr functions for data manipulation are:
+
+> - Pick variables by their names (`select()`).
+> - Pick observations by their values (`filter()`).
+> - Reorder the rows (`arrange()`).
+> - Create new variables with functions of existing variables (`mutate()`).
+> - Collapse many values down to a single summary (`summarise()`).
+
+Then there's `group_by()`, which can be used in conjunction with all of these.
+
+And `%>%` (piping) joins it all together into one happy family. 
+
+---
+
+Let's get started with the first of our dplyr verbs, `select()`.
+
+```{r}
+select(diabetes, country, continent, year)
+```
+
+Or, equivalently:
+
+```{r}
+select(diabetes, country:year)
+```
+
+But be careful with not explicitly referencing variables, and *please* don't do this:
+
+```{r}
+select(diabetes, 1,2,3)
+```
+
+---
+
+Select works on columns, and `filter()` works on rows.
+
+Some useful logical expressions to refer back to: 
+
+Logical expressions are governed by __relational operators__, that output either `TRUE` or `FALSE` based on the validity of the statement you give it. Here's a summary of the operators:
+
+| Operation | Outputs `TRUE` or `FALSE` based on the validity of the statement... |
+| ------ | ----- |
+| `a == b` | `a` is equal to `b` |
+| `a != b` | `a` is not equal to `b`. |
+| `a > b` | `a` is greater than `b`. |
+| `a < b` | `a` is less than `b`. |
+| `a >= b` | `a` is greater than or equal to `b`. |
+| `a <= b` | `a` is less than or equal to `b`. |
+| `a %in% b` | `a` is an element in `b`. | 
+
+(Again, full creds to [STAT 545](http://stat545.com/) here)
+
+Let's start by filtering all observations in which the life expectancy is greater than 50 years.
+
+```{r}
+filter(diabetes, lifeExp>50)
+```
+
+How about only data for countries in Europe?
+
+```{r}
+filter(diabetes, continent=="Europe")
+```
+
+I want to compare Canada and the U.S..
+
+```{r}
+filter(diabetes, country=="Canada"| country=="United States")
+```
+
+**Exercises**
+
+1. What's another way to select only Canada and the U.S?
+
+2. Filter observations with a per capita GDP between 1000 and 3000.
+
+---
+
+Let's slip in `arrange()` quickly here.
+
+```{r}
+arrange(diabetes, continent, pop)
+```
+
+Now I want the countries to go from the biggest to smallest population within continents.
+
+```{r}
+arrange(diabetes, continent, desc(pop))
+```
+
+---
+
+Alright then, it's time to `%>%`!
+
+The power of piping:
+
+```{r}
+diabetes %>%
+      select(COUNTRY=country, continent, lifeExp) %>%
+        filter(lifeExp <= 40) %>%
+          arrange(lifeExp)
+```
+
+... I'll do a few more piping examples and then continue with mutate and summarise in the same fashion, followed by a couple challenge examples to wrap up. 
+
+
