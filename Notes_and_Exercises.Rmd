@@ -3,7 +3,7 @@ title: "Data Wrangling in R for Health Outcomes Research"
 output: html_document
 ---
 
-The objective of this workshop is to provide an introduction to data wrangling in R using the tidyverse. By the end, you should be able to:
+The objective of this workshop is to provide an introduction to data wrangling in R using the tidyverse. By the end of this workshop, you should be able to:
 
 1. Perform simple data manipulations using the 5 dplyr verbs (`select`, `filter`, `arrange`, `mutate`, `summarise`, `group_by`)
 2. Chain these operations together using piping (`%>%`)
@@ -15,17 +15,17 @@ The objective of this workshop is to provide an introduction to data wrangling i
 First, let's load the [tidyverse](https://www.tidyverse.org/), which is an "an opinionated collection of R packages designed for data science. All packages share an underlying design philosophy, grammar, and data structures."
 
 ```{r}
-install.packages("tidyverse")
+#install.packages("tidyverse")
 library(tidyverse)
 # some other packages that we'll need down the road
-install.packages("here")
+#install.packages("here")
 library(here)
-install.packages("readr")
+#install.packages("readr")
 library(readr)
 ```
 
 
-We're going to work with a dataset from the National Institute of Diabetes and Digestive and Kidney Diseases. The dataset was compiled for the objective of developing a model to predict the occurence of diabetes mellitus using a variety of diagnostic measures. You can find more details on the data [here](https://www.kaggle.com/uciml/pima-indians-diabetes-database).
+We're going to work with a dataset from the National Institute of Diabetes and Digestive and Kidney Diseases. The data was used to develop a model for predicting the occurence of diabetes mellitus using a variety of diagnostic measures. You can find more details on the data [here](https://www.kaggle.com/uciml/pima-indians-diabetes-database).
 
 Let's load the data into R and check it out:
 
@@ -34,7 +34,7 @@ diabetes <- read_csv(here("Data/diabetes.csv"))
 ```
 
 
-(Aside: Check out this [this](https://www.tidyverse.org/articles/2017/12/workflow-vs-script/) blogpost by Jenny Bryan for best practices for getting your data into R. Hint: if you use this 'rm(list=ls())' she will "set your computer on :fire:" 
+(Aside: Check out this [this](https://www.tidyverse.org/articles/2017/12/workflow-vs-script/) blogpost by Jenny Bryan for best practices for getting your data into R. Hint: if you use this 'rm(list=ls())' she will "set your computer on fire." 
 
 
 So what do we have here?
@@ -52,11 +52,6 @@ summary(diabetes)
 What are some things we might want to know about this dataset? Let's list them here:
 
   - ...
-
-
-```{r}
-
-```
 
 
 ## Topic 2: Simple data manipulations using dplyr
@@ -80,13 +75,13 @@ And `%>%` (piping) joins it all together into one happy family.
 Let's get started with the first of our dplyr verbs, `select()`.
 
 ```{r}
-select(diabetes, country, continent, year)
+select(diabetes, ID, Pregnancies, Glucose)
 ```
 
 Or, equivalently:
 
 ```{r}
-select(diabetes, country:year)
+select(diabetes, ID:Glucose)
 ```
 
 But be careful with not explicitly referencing variables, and *please* don't do this:
@@ -113,59 +108,63 @@ Logical expressions are governed by __relational operators__, that output either
 | `a <= b` | `a` is less than or equal to `b`. |
 | `a %in% b` | `a` is an element in `b`. | 
 
-(Again, full creds to [STAT 545](http://stat545.com/) here)
+(Full creds to [STAT 545](http://stat545.com/) for this handy table)
 
-Let's start by filtering all observations in which the life expectancy is greater than 50 years.
+Let's start by filtering all observations in which blood glucose levels are greater than 100.
 
 ```{r}
-filter(diabetes, lifeExp>50)
+filter(diabetes, Glucose>100)
 ```
 
-How about only data for countries in Europe?
+How about only data for people who are Obsese?
 
 ```{r}
-filter(diabetes, continent=="Europe")
+filter(diabetes, BMI=="Obese")
 ```
 
-I want to compare Canada and the U.S..
+Now I want people who are obsese or morbidly obese...
 
 ```{r}
-filter(diabetes, country=="Canada"| country=="United States")
+filter(diabetes, BMI=="Obese" | BMI=="Morbidly Obese")
 ```
 
 **Exercises**
 
-1. What's another way to select only Canada and the U.S?
+1. What's another way to select obese and morbidly obese people?
 
-2. Filter observations with a per capita GDP between 1000 and 3000.
+2. Filter observations for people who are 25-50 years old.
+
 
 ---
 
 Let's slip in `arrange()` quickly here.
 
 ```{r}
-arrange(diabetes, continent, pop)
+arrange(diabetes, ID)
 ```
 
-Now I want the countries to go from the biggest to smallest population within continents.
+Now I want to order by BMI, and then from oldest to youngest.
 
 ```{r}
-arrange(diabetes, continent, desc(pop))
+arrange(diabetes, BMI, desc(Age))
 ```
+
+How is arrange handling a categorical variable?
+
 
 ---
 
-Alright then, it's time to `%>%`!
+Alright then, now that we've covered `select()` `filter()` and `arrange()`  it's time to `%>%`!
 
 The power of piping:
 
 ```{r}
 diabetes %>%
-      select(COUNTRY=country, continent, lifeExp) %>%
-        filter(lifeExp <= 40) %>%
-          arrange(lifeExp)
+      select(id=ID, Glucose, Diabetes) %>%
+        filter(Glucose <= 100) %>%
+          arrange(id)
 ```
 
-... I'll do a few more piping examples and then continue with mutate and summarise in the same fashion, followed by a couple challenge examples to wrap up. 
+
 
 
