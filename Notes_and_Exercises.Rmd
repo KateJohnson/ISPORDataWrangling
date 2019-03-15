@@ -166,5 +166,13 @@ diabetes %>%
 ```
 
 
+One more example, and then ask what's happening here. 
+
+Define a new variable with mutate.
+
+Show a basic summarise. And then a group by and summarise - incorporate piping into all of these
+
+Then define some larger challenge exercises using this dataset 
+
 
 
