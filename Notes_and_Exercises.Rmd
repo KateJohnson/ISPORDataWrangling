@@ -40,7 +40,7 @@ diabetes <- read_csv(here("Data/diabetes.csv"))
 So what do we have here?
 
 ```{r}
-str(diabetes)
+glimpse(diabetes)
 ```
 
 Let's get some basic summaries of each of the variables so that we have an idea of what's in there:
