@@ -36,7 +36,7 @@ diabetes <- read_csv(here("Data/diabetes.csv"))
 ```
 
 
-(Aside: Check out this [this](https://www.tidyverse.org/articles/2017/12/workflow-vs-script/) blogpost by Jenny Bryan about best practices for getting your data into R. *Hint:* if you use code like this: 'rm(list=ls())' she will "set your computer on fire." 
+(Aside: Check out this [this](https://www.tidyverse.org/articles/2017/12/workflow-vs-script/) blogpost by Jenny Bryan about best practices for getting your data into R. *Hint:* if you use code like this: 'rm(list=ls())' she will *set your computer on fire.* 
 
 ## Explore the data
 
@@ -144,7 +144,7 @@ How about only data for people who are Obsese?
 filter(diabetes, BMI=="Obese")
 ```
 
-Now I want people who are obsese or morbidly obese...
+Now I want people who are obsese or morbidly obese.
 
 ```{r}
 filter(diabetes, BMI=="Obese" | BMI=="Morbidly Obese")
@@ -152,7 +152,7 @@ filter(diabetes, BMI=="Obese" | BMI=="Morbidly Obese")
 
 **Exercises**
 
-1. What's another way to select obese and morbidly obese people?
+1. Can you think of another way to select obese and morbidly obese people?
 
 
 2. Filter observations for people who are 25 to 50 years old.
@@ -162,13 +162,13 @@ filter(diabetes, BMI=="Obese" | BMI=="Morbidly Obese")
 
 ### 3. `arrange()` changes the order of rows
 
-Okay, now that we've got `select` and `filter()` covered. Let's slip in `arrange()` quickly.
+Now that we've got `select` and `filter()` covered. Let's slip in `arrange()` quickly.
 
 ```{r}
 arrange(diabetes, ID)
 ```
 
-We can arrange by multiple variables. If you want a variable to be ordered the opposite way, just `desc()`!
+We can arrange by multiple variables. You can `desc()` too.
 
 Ordered by BMI, and then from oldest to youngest.
 
@@ -183,7 +183,7 @@ How is arrange handling a categorical variable?
 
 ### 4. `%>%` chains operations together
 
-Alrighty then, now that we've got a few tools, it's time to `%>%`!
+Alrighty then, now that we've got `select()`, `filter()` and `arrange()`, let's `%>%` them together!
 
 The power of piping:
 
@@ -199,8 +199,8 @@ Another example:
 ```{r}
 diabetes %>% 
     filter(BMI=="Obese", Age>=50) %>% 
-      select(ID, Diabetes) %>% 
-        arrange(desc(ID))
+      select(ID, Diabetes, BloodPressure) %>% 
+        arrange(desc(BloodPressure))
 ```
 
 What's happening here? Let's write it down:
@@ -214,16 +214,75 @@ Now that we're familiar with `%>%`, let's keep using it as we learn our remainin
 ### Use `mutate()` to create new variables
 
 
+I want diabetes pedigree function to be expressed as a percentage.
+
+```{r}
+diabetes %>% 
+  mutate(DiabetesPedigreePercent= DiabetesPedigreeFunction * 100)
+```
+
+**Exercise:** Make a new variable called "GlucoseDiff", which equals the difference between each patient's glucose level and the average glucose level for all patients. Then reduce the dataset to only the "ID", "Glucose", and "GlucoseDiff" variables.
+
+```{r}
+diabetes %>% 
+    mutate(GlucoseDiff= Glucose - mean(Glucose)) %>% 
+      select(ID, Glucose, GlucoseDiff)
+```
 
 
 ### We can `summarise()` our data
+
+Our last verb is used to create aggregated summarises our data. It is especially helpful when used in conjuction with `group_by()`
+
+
+Let's start with some counting. The `n()` function is good for this.
+
+How many people do we have in each BMI category?
+
+```{r}
+diabetes %>% 
+    group_by(BMI) %>% 
+      summarise(number = n())
+```
+
+`tally()` can do the same thing as `summarise( n() )` here.
+
+
+Let's see if there might be some relation betwen BMI and age, by calculating the average age and standard deviation within each BMI category. 
+
+```{r}
+diabetes %>% 
+  group_by(BMI) %>% 
+    summarise(AverageAge= mean(Age), SDAge= sd(Age))
+```
+
+Now I want to know the average age *and* the proportion of people with diabetes in each BMI category.
+
+```{r}
+diabetes %>% 
+  group_by(BMI, Diabetes) %>% 
+    summarise(AverageAge= mean(Age), Number = n()) %>% 
+      mutate(Prop= Number/sum(Number))
+```
 
 
 
 ### Challenge exercises
 
-Let's stop here to give you a chance to play with your new tools. 
+Your turn! 
 
 1. 
 
+
+Some other verbs that are part of the tidyverse and therefore very `%>%`able:
+
+  - `count()`: very similar to `table()` from base R.  
+  - `slice()`: reference rows to keep (or drop)
+  - `lag()`: lag a row x number of times
+  - `first()`: select the first row (in a group for example)
+  - `replace_na()`: replace NA with another value
+  - `rowwise()`: the opposite of `group_by()`
+  
+  
+----
 

@@ -2,7 +2,7 @@
 
 *Workshop For the ISPOR UBC Student Chapter*
 
-**Friday, March 28th 2-5pm**
+**Friday, March 29th 2-5pm**
 
 Room 3340, Pharmaceutical Sciences UBC
 

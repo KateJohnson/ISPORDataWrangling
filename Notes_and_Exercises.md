@@ -440,10 +440,135 @@ Now that we're familiar with `%>%`, let's keep using it as we learn our remainin
 
 ### Use `mutate()` to create new variables
 
+I want diabetes pedigree function to be expressed as a percentage.
+
+``` r
+diabetes %>% 
+  mutate(DiabetesPedigreePercent= DiabetesPedigreeFunction * 100)
+```
+
+    ## # A tibble: 768 x 11
+    ##       ID Pregnancies Glucose BloodPressure SkinThickness Insulin BMI  
+    ##    <dbl> <chr>         <dbl>         <dbl>         <dbl>   <dbl> <chr>
+    ##  1    32 4-6             148            72            35       0 Obese
+    ##  2   559 1-3              85            66            29       0 Over~
+    ##  3   258 7-9             183            64             0       0 Norm~
+    ##  4     5 1-3              89            66            23      94 Over~
+    ##  5   668 0               137            40            35     168 Obese
+    ##  6   499 4-6             116            74             0       0 Over~
+    ##  7   585 1-3              78            50            32      88 Obese
+    ##  8   539 10+             115             0             0       0 Obese
+    ##  9   270 1-3             197            70            45     543 Obese
+    ## 10   214 7-9             125            96             0       0 Seve~
+    ## # ... with 758 more rows, and 4 more variables:
+    ## #   DiabetesPedigreeFunction <dbl>, Age <dbl>, Diabetes <dbl>,
+    ## #   DiabetesPedigreePercent <dbl>
+
+**Exercise:** Make a new variable called "GlucoseDiff" that is the difference between each patient's glucose level and the average glucose level for all patients. Reduce the dataset to only the "ID", "Glucose", and "GlucoseDiff" variables.
+
+``` r
+diabetes %>% 
+    mutate(GlucoseDiff= Glucose - mean(Glucose)) %>% 
+      select(ID, Glucose, GlucoseDiff)
+```
+
+    ## # A tibble: 768 x 3
+    ##       ID Glucose GlucoseDiff
+    ##    <dbl>   <dbl>       <dbl>
+    ##  1    32     148       27.1 
+    ##  2   559      85      -35.9 
+    ##  3   258     183       62.1 
+    ##  4     5      89      -31.9 
+    ##  5   668     137       16.1 
+    ##  6   499     116       -4.89
+    ##  7   585      78      -42.9 
+    ##  8   539     115       -5.89
+    ##  9   270     197       76.1 
+    ## 10   214     125        4.11
+    ## # ... with 758 more rows
+
 ### We can `summarise()` our data
+
+Our last verb is used to create aggregated summarises our data. It is especially helpful when used in conjuction with `group_by()`
+
+Let's start with some counting. The `n()` function is very helpful for this.
+
+How many people do we have in each BMI category?
+
+``` r
+diabetes %>% 
+    group_by(BMI) %>% 
+      summarise(number = n())
+```
+
+    ## # A tibble: 6 x 2
+    ##   BMI                  number
+    ##   <chr>                 <int>
+    ## 1 Morbidly Obese           35
+    ## 2 Normal                  108
+    ## 3 Obese                   430
+    ## 4 Overweight              180
+    ## 5 Severely underweight     11
+    ## 6 Underweight               4
+
+`tally()` can do the same thing as \`summarise(n()) here.
+
+Let's see if there might be some relation betwen BMI and age, but calculating the average age and standard deviation within each BMI category.
+
+``` r
+diabetes %>% 
+  group_by(BMI) %>% 
+    summarise(AverageAge= mean(Age), SDAge= sd(Age))
+```
+
+    ## # A tibble: 6 x 3
+    ##   BMI                  AverageAge SDAge
+    ##   <chr>                     <dbl> <dbl>
+    ## 1 Morbidly Obese             33.3  9.54
+    ## 2 Normal                     32.0 13.4 
+    ## 3 Obese                      33.8 11.0 
+    ## 4 Overweight                 33.0 12.6 
+    ## 5 Severely underweight       30.5 15.9 
+    ## 6 Underweight                24    3.46
+
+Now I want to know the average age AND the proportion of people with diabetes in each BMI category.
+
+``` r
+diabetes %>% 
+  group_by(BMI, Diabetes) %>% 
+    summarise(AverageAge= mean(Age), Number = n()) %>% 
+      mutate(Prop= Number/sum(Number))
+```
+
+    ## # A tibble: 11 x 5
+    ## # Groups:   BMI [6]
+    ##    BMI                  Diabetes AverageAge Number   Prop
+    ##    <chr>                   <dbl>      <dbl>  <int>  <dbl>
+    ##  1 Morbidly Obese              0       32.5     13 0.371 
+    ##  2 Morbidly Obese              1       33.7     22 0.629 
+    ##  3 Normal                      0       31.1    101 0.935 
+    ##  4 Normal                      1       44.3      7 0.0648
+    ##  5 Obese                       0       31.3    237 0.551 
+    ##  6 Obese                       1       36.9    193 0.449 
+    ##  7 Overweight                  0       31.4    136 0.756 
+    ##  8 Overweight                  1       37.9     44 0.244 
+    ##  9 Severely underweight        0       27.9      9 0.818 
+    ## 10 Severely underweight        1       42        2 0.182 
+    ## 11 Underweight                 0       24        4 1
 
 ### Challenge exercises
 
-Let's stop here to give you a chance to play with your new tools.
+Your turn!
 
-1.
+1.  
+
+Some other verbs that are part of the tidyverse and therefore very `%>%`able:
+
+-   `count()`: very similar to `table()` from base R.
+-   `slice()`: select rows to keep (or drop)
+-   `lag()`: lag a row x number of times
+-   `first()`: to select the first row (in a group for example)
+-   `replace_na()`: replace NA with another value
+-   `rowwise()`: the opposite of `group_by()`
+
+------------------------------------------------------------------------
