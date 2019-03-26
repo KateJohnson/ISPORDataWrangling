@@ -1,19 +1,19 @@
 ---
 title: "Data Wrangling in R for Health Outcomes Research"
-output: html_document
-  keep_md: true
+output: github_document
+keep.md: true
 ---
 
 The objective of this workshop is to provide an introduction to data wrangling in R using the tidyverse. By the end of this workshop, you should be able to:
 
-1. Become familiar with a project oriented workflow and R markdown document.
-2. Perform simple data manipulations using the 5 dplyr verbs (`select`, `filter`, `arrange`, `mutate`, `summarise`, `group_by`). Chain these operations together using piping (`%>%`).
+1. Use a project oriented workflow and an R markdown document.
+2. Perform simple data manipulations using the 5 dplyr verbs (`select`, `filter`, `arrange`, `mutate`, `summarise`, `group_by`), and chain these operations together using piping (`%>%`).
 3. Join datasets together using the set of `join` functions.
 
 
-## Goal 1: Setting up our workflow
+## Objective 1: Setting up our workflow
 
-First, let's load the [tidyverse](https://www.tidyverse.org/), which is an "an opinionated collection of R packages designed for data science. All packages share an underlying design philosophy, grammar, and data structures."
+First, let's load the [tidyverse](https://www.tidyverse.org/), which is an "an opinionated collection of R packages designed for data science. All packages share an underlying design philosophy, grammar, and data structures." The operate in parallel to, and often in place of, the set of packages included in base R.
 
 ```{r}
 #install.packages("tidyverse")
@@ -27,7 +27,7 @@ library(readr)
 ```
 
 
-We're going to work with a dataset from the National Institute of Diabetes and Digestive and Kidney Diseases. The data was collected for the purpose of developing a model to predict the occurence of diabetes mellitus among a group of Pima Indians. You can find more details on the data [here](https://www.kaggle.com/uciml/pima-indians-diabetes-database).
+For this workshop, we're going to work with a dataset from the National Institute of Diabetes and Digestive and Kidney Diseases that I pulled from [kaggle](https://www.kaggle.com). The data was collected for the purpose of developing a model to predict the occurence of diabetes mellitus among a group of Pima Indians. You can find more details on the data [here](https://www.kaggle.com/uciml/pima-indians-diabetes-database).
 
 Let's load the data into R and check it out:
 
@@ -36,7 +36,7 @@ diabetes <- read_csv(here("Data/diabetes.csv"))
 ```
 
 
-(Aside: Check out this [this](https://www.tidyverse.org/articles/2017/12/workflow-vs-script/) blogpost by Jenny Bryan for best practices for getting your data into R. Hint: if you use code like this: 'rm(list=ls())' she will "set your computer on fire." 
+(Aside: Check out this [this](https://www.tidyverse.org/articles/2017/12/workflow-vs-script/) blogpost by Jenny Bryan about best practices for getting your data into R. *Hint:* if you use code like this: 'rm(list=ls())' she will "set your computer on fire." 
 
 ## Explore the data
 
@@ -57,9 +57,9 @@ What are some things we might want to check when we first bring our data into R?
   - ...
 
 
-## Topic 2: Data manipulations using dplyr
+## Objective 2: Data manipulations using dplyr
 
-(This summary is taken from [STAT 545](http://stat545.com/) class notes.)
+(This summary is taken from the [STAT 545](http://stat545.com/) class notes.)
 
 The six main dplyr functions for data manipulation are:
 
@@ -71,11 +71,11 @@ The six main dplyr functions for data manipulation are:
 
 Then there's `group_by()`, which can be used in conjunction with all of these.
 
-And `%>%` (piping) joins it all together into one happy family. 
+And `%>%` (piping) joins them all together into one happy family. 
 
 ---
 
-### `select()` works on variables
+### 1. `select()` works on variables
 
 Let's get started with the first of our dplyr verbs, `select()`.
 
@@ -96,10 +96,11 @@ select(diabetes, 1,2,3)
 ```
 
 `select()` has a lot of handy tricks:
-  -`everything()` to select all variables
+
+  - `everything()` to select all variables
   - `-` to drop variables. 
   - Use `=` within select to rename variables (*New_name = Old_name*)
-  - Repoistion variables based on their order in `select()`
+  - Reposition variables based on their order in `select()`
   
 I want to make Diabetes the first variable in my dataframe:
 
@@ -110,7 +111,7 @@ select(diabetes, Diabetes, everything())
 
 ---
 
-### `filter()` works on rows
+### 2. `filter()` works on rows
 
 Select works on columns, and `filter()` works on rows.
 
@@ -128,7 +129,7 @@ Logical expressions are governed by __relational operators__, that output either
 | `a <= b` | `a` is less than or equal to `b`. |
 | `a %in% b` | `a` is an element in `b`. | 
 
-(Full creds to [STAT 545](http://stat545.com/) for this handy table)
+(Full credit to [STAT 545](http://stat545.com/) for this handy table)
 
 
 Let's start by filtering all observations in which blood glucose levels are greater than 100.
@@ -154,22 +155,22 @@ filter(diabetes, BMI=="Obese" | BMI=="Morbidly Obese")
 1. What's another way to select obese and morbidly obese people?
 
 
-2. Filter observations for people who are 25-50 years old.
+2. Filter observations for people who are 25 to 50 years old.
 
 
 ---
 
-### `arrange()` changes the order of rows
+### 3. `arrange()` changes the order of rows
 
-Okay, we've got `select` and `filter()` covered. Let's slip in `arrange()` quickly.
+Okay, now that we've got `select` and `filter()` covered. Let's slip in `arrange()` quickly.
 
 ```{r}
 arrange(diabetes, ID)
 ```
 
-We can arrange by multiple variables, and if you want it the other way, just `desc()`!
+We can arrange by multiple variables. If you want a variable to be ordered the opposite way, just `desc()`!
 
-I want to order by BMI, and then from oldest to youngest.
+Ordered by BMI, and then from oldest to youngest.
 
 ```{r}
 arrange(diabetes, BMI, desc(Age))
@@ -180,7 +181,7 @@ How is arrange handling a categorical variable?
 
 ---
 
-### `%>%` chains operations together
+### 4. `%>%` chains operations together
 
 Alrighty then, now that we've got a few tools, it's time to `%>%`!
 
@@ -202,7 +203,7 @@ diabetes %>%
         arrange(desc(ID))
 ```
 
-What's happening here? Let's write it here:
+What's happening here? Let's write it down:
 
   - ...
 
@@ -215,13 +216,13 @@ Now that we're familiar with `%>%`, let's keep using it as we learn our remainin
 
 
 
-### `summarise()` your data
+### We can `summarise()` our data
 
 
 
 ### Challenge exercises
 
-Let's stop here and give you a chance to play with your new tools. 
+Let's stop here to give you a chance to play with your new tools. 
 
 1. 
 
