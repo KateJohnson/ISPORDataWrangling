@@ -283,6 +283,8 @@ diabetes %>%
 ```
 
 
+2.
+
 ---
 Some other verbs that are part of the tidyverse and therefore very `%>%`able:
 
