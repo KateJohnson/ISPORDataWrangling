@@ -271,9 +271,19 @@ diabetes %>%
 
 Your turn! 
 
-1. 
+1. Let's answer a question. Which variables are the most different between people who have diabetes, and people who don't? A few hints to get you started:
+
+  - We're going to want to express all continous variables in common terms. The 'scale()' function will be helpful with this. For each observation, `scale()` subtracts the mean and divides by the standard deviation for all observations in that variable. This is akin to z-scores in statistical speak, and it will make all variables comparable on the same units.
+  - For categorical variables, we could determine the number of observations in each level of the variable, and compare the counts between people with and without diabetes. 
 
 
+```{r}
+diabetes %>% 
+    mutate()
+```
+
+
+---
 Some other verbs that are part of the tidyverse and therefore very `%>%`able:
 
   - `count()`: very similar to `table()` from base R.  
@@ -282,7 +292,5 @@ Some other verbs that are part of the tidyverse and therefore very `%>%`able:
   - `first()`: select the first row (in a group for example)
   - `replace_na()`: replace NA with another value
   - `rowwise()`: the opposite of `group_by()`
-  
-  
 ----
 
