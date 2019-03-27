@@ -5,7 +5,7 @@ The objective of this workshop is to provide an introduction to data wrangling i
 
 1.  Use a project oriented workflow and an R markdown document.
 2.  Perform simple data manipulations using the 5 dplyr verbs (`select`, `filter`, `arrange`, `mutate`, `summarise`, `group_by`), and chain these operations together using piping (`%>%`).
-3.  Join datasets together using the set of `join` functions.
+3.  Be aware of the library of `join` functions that allow you to merge datasets together based on a common variable(s).
 
 Objective 1: Setting up our workflow
 ------------------------------------
@@ -17,14 +17,14 @@ First, let's load the [tidyverse](https://www.tidyverse.org/), which is an "an o
 library(tidyverse)
 ```
 
-    ## -- Attaching packages -------------------------------------------------------------------------------------------------------------------- tidyverse 1.2.1 --
+    ## -- Attaching packages ------------------------------------------------------------------------------------- tidyverse 1.2.1 --
 
     ## v ggplot2 3.1.0       v purrr   0.3.1  
     ## v tibble  2.0.1       v dplyr   0.8.0.1
     ## v tidyr   0.8.3       v stringr 1.4.0  
     ## v readr   1.3.1       v forcats 0.3.0
 
-    ## -- Conflicts ----------------------------------------------------------------------------------------------------------------------- tidyverse_conflicts() --
+    ## -- Conflicts ---------------------------------------------------------------------------------------- tidyverse_conflicts() --
     ## x dplyr::filter() masks stats::filter()
     ## x dplyr::lag()    masks stats::lag()
 
@@ -63,7 +63,7 @@ diabetes <- read_csv(here("Data/diabetes.csv"))
     ##   Diabetes = col_double()
     ## )
 
-(Aside: Check out this [this](https://www.tidyverse.org/articles/2017/12/workflow-vs-script/) blogpost by Jenny Bryan about best practices for getting your data into R. *Hint:* if you use code like this: 'rm(list=ls())' she will "set your computer on fire."
+(Aside: Check out this [this](https://www.tidyverse.org/articles/2017/12/workflow-vs-script/) blogpost by Jenny Bryan about best practices for getting your data into R. *Hint:* if you use code like this: 'rm(list=ls())' she will *set your computer on fire.*
 
 Explore the data
 ----------------
@@ -210,7 +210,7 @@ select(diabetes, 1,2,3)
 -   Use `=` within select to rename variables (*New\_name = Old\_name*)
 -   Reposition variables based on their order in `select()`
 
-I want to make Diabetes the first variable in my dataframe:
+I want to yoink Diabetes and put it in the very first position in my dataset:
 
 ``` r
 select(diabetes, Diabetes, everything())
@@ -298,7 +298,7 @@ filter(diabetes, BMI=="Obese")
     ## # ... with 420 more rows, and 3 more variables:
     ## #   DiabetesPedigreeFunction <dbl>, Age <dbl>, Diabetes <dbl>
 
-Now I want people who are obsese or morbidly obese...
+Now I want people who are obsese or morbidly obese.
 
 ``` r
 filter(diabetes, BMI=="Obese" | BMI=="Morbidly Obese")
@@ -322,15 +322,55 @@ filter(diabetes, BMI=="Obese" | BMI=="Morbidly Obese")
 
 **Exercises**
 
-1.  What's another way to select obese and morbidly obese people?
+1.  Can you think of another way to select obese and morbidly obese people?
 
-2.  Filter observations for people who are 25 to 50 years old.
+``` r
+filter(diabetes, BMI %in% c("Obese","Morbidly Obese"))
+```
+
+    ## # A tibble: 465 x 10
+    ##       ID Pregnancies Glucose BloodPressure SkinThickness Insulin BMI  
+    ##    <dbl> <chr>         <dbl>         <dbl>         <dbl>   <dbl> <chr>
+    ##  1    32 4-6             148            72            35       0 Obese
+    ##  2   668 0               137            40            35     168 Obese
+    ##  3   585 1-3              78            50            32      88 Obese
+    ##  4   539 10+             115             0             0       0 Obese
+    ##  5   270 1-3             197            70            45     543 Obese
+    ##  6   733 4-6             110            92             0       0 Obese
+    ##  7   353 10+             168            74             0       0 Obese
+    ##  8   386 1-3             189            60            23     846 Obese
+    ##  9   692 0               118            84            47     230 Morb~
+    ## 10   533 1-3             103            30            38      83 Obese
+    ## # ... with 455 more rows, and 3 more variables:
+    ## #   DiabetesPedigreeFunction <dbl>, Age <dbl>, Diabetes <dbl>
+
+1.  Filter observations for people who are 25 to 50 years old.
+
+``` r
+filter(diabetes, Age <=50, Age>= 25)
+```
+
+    ## # A tibble: 468 x 10
+    ##       ID Pregnancies Glucose BloodPressure SkinThickness Insulin BMI  
+    ##    <dbl> <chr>         <dbl>         <dbl>         <dbl>   <dbl> <chr>
+    ##  1    32 4-6             148            72            35       0 Obese
+    ##  2   559 1-3              85            66            29       0 Over~
+    ##  3   258 7-9             183            64             0       0 Norm~
+    ##  4   668 0               137            40            35     168 Obese
+    ##  5   499 4-6             116            74             0       0 Over~
+    ##  6   585 1-3              78            50            32      88 Obese
+    ##  7   539 10+             115             0             0       0 Obese
+    ##  8   733 4-6             110            92             0       0 Obese
+    ##  9   353 10+             168            74             0       0 Obese
+    ## 10    13 7-9             100             0             0       0 Over~
+    ## # ... with 458 more rows, and 3 more variables:
+    ## #   DiabetesPedigreeFunction <dbl>, Age <dbl>, Diabetes <dbl>
 
 ------------------------------------------------------------------------
 
 ### 3. `arrange()` changes the order of rows
 
-Okay, now that we've got `select` and `filter()` covered. Let's slip in `arrange()` quickly.
+Now that we've got `select` and `filter()` covered. Let's slip in `arrange()` quickly.
 
 ``` r
 arrange(diabetes, ID)
@@ -352,7 +392,7 @@ arrange(diabetes, ID)
     ## # ... with 758 more rows, and 3 more variables:
     ## #   DiabetesPedigreeFunction <dbl>, Age <dbl>, Diabetes <dbl>
 
-We can arrange by multiple variables. If you want a variable to be ordered the opposite way, just `desc()`!
+We can arrange by multiple variables. You can `desc()` too.
 
 Ordered by BMI, and then from oldest to youngest.
 
@@ -382,7 +422,7 @@ How is arrange handling a categorical variable?
 
 ### 4. `%>%` chains operations together
 
-Alrighty then, now that we've got a few tools, it's time to `%>%`!
+Alrighty then, now that we've got `select()`, `filter()` and `arrange()`, let's `%>%` them together!
 
 The power of piping:
 
@@ -413,23 +453,23 @@ Another example:
 ``` r
 diabetes %>% 
     filter(BMI=="Obese", Age>=50) %>% 
-      select(ID, Diabetes) %>% 
-        arrange(desc(ID))
+      select(ID, Diabetes, BloodPressure) %>% 
+        arrange(desc(BloodPressure))
 ```
 
-    ## # A tibble: 45 x 2
-    ##       ID Diabetes
-    ##    <dbl>    <dbl>
-    ##  1   675        1
-    ##  2   667        1
-    ##  3   643        1
-    ##  4   634        1
-    ##  5   612        1
-    ##  6   601        1
-    ##  7   596        1
-    ##  8   591        1
-    ##  9   583        1
-    ## 10   575        1
+    ## # A tibble: 45 x 3
+    ##       ID Diabetes BloodPressure
+    ##    <dbl>    <dbl>         <dbl>
+    ##  1   136        0           108
+    ##  2    88        0           106
+    ##  3   139        1           104
+    ##  4   197        0            95
+    ##  5   667        1            94
+    ##  6   452        0            92
+    ##  7   596        1            92
+    ##  8   146        1            92
+    ##  9   601        1            90
+    ## 10   634        1            90
     ## # ... with 35 more rows
 
 What's happening here? Let's write it down:
@@ -440,7 +480,7 @@ Now that we're familiar with `%>%`, let's keep using it as we learn our remainin
 
 ### Use `mutate()` to create new variables
 
-I want diabetes pedigree function to be expressed as a percentage.
+I want diabetes pedigree function to be expressed as a percentage rather than a proportion.
 
 ``` r
 diabetes %>% 
@@ -464,7 +504,7 @@ diabetes %>%
     ## #   DiabetesPedigreeFunction <dbl>, Age <dbl>, Diabetes <dbl>,
     ## #   DiabetesPedigreePercent <dbl>
 
-**Exercise:** Make a new variable called "GlucoseDiff" that is the difference between each patient's glucose level and the average glucose level for all patients. Reduce the dataset to only the "ID", "Glucose", and "GlucoseDiff" variables.
+**Exercise:** Make a new variable called *GlucoseDiff*, which equals the difference between each patient's glucose level and the average glucose level for all patients. Then reduce the dataset to only the *ID*, *Glucose*, and *GlucoseDiff* variables.
 
 ``` r
 diabetes %>% 
@@ -491,7 +531,7 @@ diabetes %>%
 
 Our last verb is used to create aggregated summarises our data. It is especially helpful when used in conjuction with `group_by()`
 
-Let's start with some counting. The `n()` function is very helpful for this.
+Let's start with some counting. The `n()` function is good for this.
 
 How many people do we have in each BMI category?
 
@@ -511,9 +551,9 @@ diabetes %>%
     ## 5 Severely underweight     11
     ## 6 Underweight               4
 
-`tally()` can do the same thing as \`summarise(n()) here.
+FYI: You could also pipe to `tally()` which is equivalent to `summarise(n())` here.
 
-Let's see if there might be some relation betwen BMI and age, but calculating the average age and standard deviation within each BMI category.
+Let's see if there might be some relation betwen BMI and age, by calculating the average age and standard deviation within each BMI category.
 
 ``` r
 diabetes %>% 
@@ -531,7 +571,7 @@ diabetes %>%
     ## 5 Severely underweight       30.5 15.9 
     ## 6 Underweight                24    3.46
 
-Now I want to know the average age AND the proportion of people with diabetes in each BMI category.
+Now I want to know the average age *and* the proportion of people with diabetes in each BMI category.
 
 ``` r
 diabetes %>% 
@@ -560,15 +600,112 @@ diabetes %>%
 
 Your turn!
 
-1.  
+Your mission is to determine which characteristic (or set of characteristics) differs the most between diabetic and non-diabetic patients. To do this, you'll want to compare variables between diabetes and non-diabetes patients.
 
-Some other verbs that are part of the tidyverse and therefore very `%>%`able:
+-   **(1)** Let's start by picking a few variables that you expect to differ a lot based on diabetes status (and at least one that's continuous, and one that's categorical), and then use a staistic of your choice (for example: mean, median, proportion) to summarise that variable across diabetes categories.
 
--   `count()`: very similar to `table()` from base R.
--   `slice()`: select rows to keep (or drop)
--   `lag()`: lag a row x number of times
--   `first()`: to select the first row (in a group for example)
--   `replace_na()`: replace NA with another value
--   `rowwise()`: the opposite of `group_by()`
+*For example, you could calculate the average age, blood pressure, and glucose level among diabetic and non-diabetic patients. In a seperate step, you could do the same for the proportion of people in each of the pregnancy categories.*
+
+``` r
+# Continuous variables
+diabetes %>% 
+  group_by(Diabetes) %>% 
+    summarise(AverageAge=mean(Age), AverageBP=mean(BloodPressure), AverageGlucose= mean(Glucose))
+```
+
+    ## # A tibble: 2 x 4
+    ##   Diabetes AverageAge AverageBP AverageGlucose
+    ##      <dbl>      <dbl>     <dbl>          <dbl>
+    ## 1        0       31.2      68.2           110.
+    ## 2        1       37.1      70.8           141.
+
+``` r
+# Categorical variable
+diabetes %>% 
+  select(ID, Pregnancies, BMI, Diabetes) %>% 
+    group_by(Diabetes, Pregnancies) %>% 
+      summarise(n=n()) %>% 
+        mutate(prop= round(n/sum(n),2)) %>% 
+          arrange(Pregnancies)
+```
+
+    ## # A tibble: 10 x 4
+    ## # Groups:   Diabetes [2]
+    ##    Diabetes Pregnancies     n  prop
+    ##       <dbl> <chr>       <int> <dbl>
+    ##  1        0 0              73  0.15
+    ##  2        1 0              38  0.14
+    ##  3        0 1-3           238  0.48
+    ##  4        1 1-3            75  0.28
+    ##  5        0 10+            28  0.06
+    ##  6        1 10+            30  0.11
+    ##  7        0 4-6           115  0.23
+    ##  8        1 4-6            60  0.22
+    ##  9        0 7-9            46  0.09
+    ## 10        1 7-9            65  0.24
+
+We have a bit of a problem with units of the continuous variables, don't we? It would be much better if we could express glucose and blood pressure in the same units so that they would be comparable. Let's try to do that using the `scale()` function.
+
+-   **(2)** Choose a subset of (continous) variables of interest, scale them, and then calculate the difference between diabeties categories using this new, scaled variable. Which variable differs the most between diabetic and non-diabetic patients?
+
+``` r
+diabetes %>% 
+    mutate(z.Age=scale(Age), z.BP=scale(BloodPressure), z.Glucose= scale(Glucose)) %>% 
+      group_by(Diabetes) %>% 
+        summarise(AverageAge=mean(z.Age), AverageBP=mean(z.BP), AverageGlucose= mean(z.Glucose))
+```
+
+    ## # A tibble: 2 x 4
+    ##   Diabetes AverageAge AverageBP AverageGlucose
+    ##      <dbl>      <dbl>     <dbl>          <dbl>
+    ## 1        0     -0.174   -0.0476         -0.341
+    ## 2        1      0.325    0.0888          0.637
+
+-   **(3)** **Bonus:** (For the experienced data wrangler) Do the same as question 2, but this time, scale all the continous variables, and calculate the difference in their mean between diabetes groups. Try to do this **without** explicitly calling the variable names.
+
+You may find the conditional functions `select_if()`, `mutate_at()` and `summarise_at()` very helpful here, because some continous variables (ie. Diabetes status), you won't want to scale.
+
+``` r
+diabetes %>% 
+    select_if(is.numeric) %>% 
+      mutate_at(vars(-ID,-Diabetes), scale) %>% 
+        group_by(Diabetes) %>% 
+          summarise_at(vars(-ID), mean) %>% 
+# you could stop here, but it's hard to compare the difference between groups with the variables spread 
+# out like this, and even harder to plot, so let's gather them
+            gather(key="Predictor", value="Z.mean", Glucose:Age) %>%
+              group_by(Predictor) %>% 
+                mutate(delta.z.mean= Z.mean - lag(Z.mean,1))
+```
+
+    ## # A tibble: 12 x 4
+    ## # Groups:   Predictor [6]
+    ##    Diabetes Predictor                 Z.mean delta.z.mean
+    ##       <dbl> <chr>                      <dbl>        <dbl>
+    ##  1        0 Glucose                  -0.341        NA    
+    ##  2        1 Glucose                   0.637         0.978
+    ##  3        0 BloodPressure            -0.0476       NA    
+    ##  4        1 BloodPressure             0.0888        0.136
+    ##  5        0 SkinThickness            -0.0547       NA    
+    ##  6        1 SkinThickness             0.102         0.157
+    ##  7        0 Insulin                  -0.0955       NA    
+    ##  8        1 Insulin                   0.178         0.274
+    ##  9        0 DiabetesPedigreeFunction -0.127        NA    
+    ## 10        1 DiabetesPedigreeFunction  0.237         0.364
+    ## 11        0 Age                      -0.174        NA    
+    ## 12        1 Age                       0.325         0.500
+
+``` r
+# Now we can see that the greatest (standardized) difference is in Glucose
+```
 
 ------------------------------------------------------------------------
+
+**Extras:** Some other verbs that are part of the tidyverse and therefore very `%>%`able:
+
+-   `count()`: very similar to `table()` from base R.
+-   `slice()`: reference rows to keep (or drop)
+-   `lag()`: lag a row x number of times
+-   `first()`: select the first row (in a group for example)
+-   `replace_na()`: replace NA with another value
+-   `rowwise()`: the opposite of `group_by()`

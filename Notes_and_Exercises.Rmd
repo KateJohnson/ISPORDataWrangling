@@ -8,7 +8,7 @@ The objective of this workshop is to provide an introduction to data wrangling i
 
 1. Use a project oriented workflow and an R markdown document.
 2. Perform simple data manipulations using the 5 dplyr verbs (`select`, `filter`, `arrange`, `mutate`, `summarise`, `group_by`), and chain these operations together using piping (`%>%`).
-3. Join datasets together using the set of `join` functions.
+3. Be aware of the library of `join` functions that allow you to merge datasets together based on a common variable(s).
 
 
 ## Objective 1: Setting up our workflow
@@ -102,7 +102,7 @@ select(diabetes, 1,2,3)
   - Use `=` within select to rename variables (*New_name = Old_name*)
   - Reposition variables based on their order in `select()`
   
-I want to make Diabetes the first variable in my dataframe:
+I want to yoink Diabetes and put it in the very first position in my dataset:
 
 ```{r}
 select(diabetes, Diabetes, everything())
@@ -152,10 +152,18 @@ filter(diabetes, BMI=="Obese" | BMI=="Morbidly Obese")
 
 **Exercises**
 
-1. Can you think of another way to select obese and morbidly obese people?
+- Can you think of another way to select obese and morbidly obese people?
+
+```{r}
+filter(diabetes, BMI %in% c("Obese","Morbidly Obese"))
+```
 
 
-2. Filter observations for people who are 25 to 50 years old.
+- Filter observations for people who are 25 to 50 years old.
+
+```{r}
+filter(diabetes, Age <=50, Age>= 25)
+```
 
 
 ---
@@ -214,14 +222,14 @@ Now that we're familiar with `%>%`, let's keep using it as we learn our remainin
 ### Use `mutate()` to create new variables
 
 
-I want diabetes pedigree function to be expressed as a percentage.
+I want diabetes pedigree function to be expressed as a percentage rather than a proportion.
 
 ```{r}
 diabetes %>% 
   mutate(DiabetesPedigreePercent= DiabetesPedigreeFunction * 100)
 ```
 
-**Exercise:** Make a new variable called "GlucoseDiff", which equals the difference between each patient's glucose level and the average glucose level for all patients. Then reduce the dataset to only the "ID", "Glucose", and "GlucoseDiff" variables.
+**Exercise:** Make a new variable called *GlucoseDiff*, which equals the difference between each patient's glucose level and the average glucose level for all patients. Then reduce the dataset to only the *ID*, *Glucose*, and *GlucoseDiff* variables.
 
 ```{r}
 diabetes %>% 
@@ -245,7 +253,7 @@ diabetes %>%
       summarise(number = n())
 ```
 
-`tally()` can do the same thing as `summarise( n() )` here.
+FYI: You could also pipe to `tally()` which is equivalent to `summarise(n())` here.
 
 
 Let's see if there might be some relation betwen BMI and age, by calculating the average age and standard deviation within each BMI category. 
@@ -271,21 +279,62 @@ diabetes %>%
 
 Your turn! 
 
-1. Let's answer a question. Which variables are the most different between people who have diabetes, and people who don't? A few hints to get you started:
+Your mission is to determine which characteristic (or set of characteristics) differs the most between diabetic and non-diabetic patients. To do this, you'll want to compare variables between diabetes and non-diabetes patients.
 
-  - We're going to want to express all continous variables in common terms. The 'scale()' function will be helpful with this. For each observation, `scale()` subtracts the mean and divides by the standard deviation for all observations in that variable. This is akin to z-scores in statistical speak, and it will make all variables comparable on the same units.
-  - For categorical variables, we could determine the number of observations in each level of the variable, and compare the counts between people with and without diabetes. 
+- **(1)** Let's start by picking a few variables that you expect to differ a lot based on diabetes status (and at least one that's continuous, and one that's categorical), and then use a staistic of your choice (for example: mean, median, proportion) to summarise that variable across diabetes categories. 
 
+*For example, you could calculate the average age, blood pressure, and glucose level among diabetic and non-diabetic patients. In a seperate step, you could do the same for the proportion of people in each of the pregnancy categories.*
+
+  
+```{r}
+# Continuous variables
+diabetes %>% 
+  group_by(Diabetes) %>% 
+    summarise(AverageAge=mean(Age), AverageBP=mean(BloodPressure), AverageGlucose= mean(Glucose))
+
+# Categorical variable
+diabetes %>% 
+  select(ID, Pregnancies, BMI, Diabetes) %>% 
+    group_by(Diabetes, Pregnancies) %>% 
+      summarise(n=n()) %>% 
+        mutate(prop= round(n/sum(n),2)) %>% 
+          arrange(Pregnancies)
+```
+
+We have a bit of a problem with units of the continuous variables, don't we? It would be much better if we could express glucose and blood pressure in the same units so that they would be comparable. Let's try to do that using the `scale()` function.
+
+- **(2)** Choose a subset of (continous) variables of interest, scale them, and then calculate the difference between diabeties categories using this new, scaled variable. Which variable differs the most between diabetic and non-diabetic patients?
 
 ```{r}
 diabetes %>% 
-    mutate()
+    mutate(z.Age=scale(Age), z.BP=scale(BloodPressure), z.Glucose= scale(Glucose)) %>% 
+      group_by(Diabetes) %>% 
+        summarise(AverageAge=mean(z.Age), AverageBP=mean(z.BP), AverageGlucose= mean(z.Glucose))
 ```
 
 
-2.
+- **(3)** **Bonus:** (For the experienced data wrangler) Do the same as question 2, but this time, scale all the continous variables, and calculate the difference in their mean between diabetes groups. Try to do this **without** explicitly calling the variable names. 
+
+You may find the conditional functions `select_if()`, `mutate_at()` and `summarise_at()`  very helpful here, because some continous variables (ie. Diabetes status), you won't want to scale.
+
+```{r}
+diabetes %>% 
+    select_if(is.numeric) %>% 
+      mutate_at(vars(-ID,-Diabetes), scale) %>% 
+        group_by(Diabetes) %>% 
+          summarise_at(vars(-ID), mean) %>% 
+# you could stop here, but it's hard to compare the difference between groups with the variables spread 
+# out like this, and even harder to plot, so let's gather them
+            gather(key="Predictor", value="Z.mean", Glucose:Age) %>%
+              group_by(Predictor) %>% 
+                mutate(delta.z.mean= Z.mean - lag(Z.mean,1))
+# Now we can see that the greatest (standardized) difference is in Glucose
+```
+
 
 ---
+
+**Extras:**
 Some other verbs that are part of the tidyverse and therefore very `%>%`able:
 
   - `count()`: very similar to `table()` from base R.  
@@ -294,5 +343,5 @@ Some other verbs that are part of the tidyverse and therefore very `%>%`able:
   - `first()`: select the first row (in a group for example)
   - `replace_na()`: replace NA with another value
   - `rowwise()`: the opposite of `group_by()`
-----
+
 
