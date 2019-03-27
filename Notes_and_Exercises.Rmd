@@ -229,7 +229,7 @@ diabetes %>%
   mutate(DiabetesPedigreePercent= DiabetesPedigreeFunction * 100)
 ```
 
-**Exercise:** Make a new variable called *GlucoseDiff*, which equals the difference between each patient's glucose level and the average glucose level for all patients. Then reduce the dataset to only the *ID*, *Glucose*, and *GlucoseDiff* variables.
+- **Exercise:** Make a new variable called *GlucoseDiff*, which equals the difference between each patient's glucose level and the average glucose level for all patients. Then reduce the dataset to only the *ID*, *Glucose*, and *GlucoseDiff* variables.
 
 ```{r}
 diabetes %>% 

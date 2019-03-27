@@ -322,7 +322,7 @@ filter(diabetes, BMI=="Obese" | BMI=="Morbidly Obese")
 
 **Exercises**
 
-1.  Can you think of another way to select obese and morbidly obese people?
+-   Can you think of another way to select obese and morbidly obese people?
 
 ``` r
 filter(diabetes, BMI %in% c("Obese","Morbidly Obese"))
@@ -344,7 +344,7 @@ filter(diabetes, BMI %in% c("Obese","Morbidly Obese"))
     ## # ... with 455 more rows, and 3 more variables:
     ## #   DiabetesPedigreeFunction <dbl>, Age <dbl>, Diabetes <dbl>
 
-1.  Filter observations for people who are 25 to 50 years old.
+-   Filter observations for people who are 25 to 50 years old.
 
 ``` r
 filter(diabetes, Age <=50, Age>= 25)
@@ -504,7 +504,7 @@ diabetes %>%
     ## #   DiabetesPedigreeFunction <dbl>, Age <dbl>, Diabetes <dbl>,
     ## #   DiabetesPedigreePercent <dbl>
 
-**Exercise:** Make a new variable called *GlucoseDiff*, which equals the difference between each patient's glucose level and the average glucose level for all patients. Then reduce the dataset to only the *ID*, *Glucose*, and *GlucoseDiff* variables.
+-   **Exercise:** Make a new variable called *GlucoseDiff*, which equals the difference between each patient's glucose level and the average glucose level for all patients. Then reduce the dataset to only the *ID*, *Glucose*, and *GlucoseDiff* variables.
 
 ``` r
 diabetes %>% 
