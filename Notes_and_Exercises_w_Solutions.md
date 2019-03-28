@@ -63,7 +63,7 @@ diabetes <- read_csv(here("Data/diabetes.csv"))
     ##   Diabetes = col_integer()
     ## )
 
-(Aside: Check out this [this](https://www.tidyverse.org/articles/2017/12/workflow-vs-script/) blogpost by Jenny Bryan about best practices for getting your data into R. *Hint:* if you use code like this: 'rm(list=ls())' she will *set your computer on fire.*
+(Aside: Check out this [this](https://www.tidyverse.org/articles/2017/12/workflow-vs-script/) blogpost by Jenny Bryan about best practices for getting your data into R. *Hint:* if you use code like this: 'rm(list=ls())' she will "set your computer on :fire:.""
 
 Explore the data
 ----------------
@@ -261,6 +261,8 @@ Logical expressions are governed by **relational operators**, that output either
 | `a %in% b` | `a` is an element in `b`.                                           |
 
 (Full credit to [STAT 545](http://stat545.com/) for this handy table)
+
+We can negate all these operations by wrapping them in brackets so: `!(a %in% b)` reads `a` is NOT an element in `b`.
 
 Let's start by filtering all observations in which blood glucose levels are greater than 100.
 
@@ -778,6 +780,130 @@ diabetes %>%
 
 ------------------------------------------------------------------------
 
+Objective 3: Joining datasets
+-----------------------------
+
+Dplyr has a set of join functions that allow you to merge datasets together based on a commmon variable(s). If you speak SQL, stop here! These are just the standard SQL joins implemented in R. If you don't, check out this very [handy cheatsheet](https://stat545.com/bit001_dplyr-cheatsheet.html) courtesy of Jenny Bryan that describes all the available join functions and what they do. Below, we'll go through a sample workflow when we have a primary dataset and want to link in additional information from another dataset.
+
+We'll stick with diabetes as our primary dataset, but now we have another dataset, *Diabetes\_extra*, which contains additional variables that we want to link in. The ID variable was used to identify individuals in both datasets. (**Disclosure:** I made this data up.)
+
+``` r
+diabetes_extra <- read_csv(here("Data/diabetes_extra.csv"))
+```
+
+    ## Parsed with column specification:
+    ## cols(
+    ##   ID = col_integer(),
+    ##   Cholesterol = col_integer(),
+    ##   FamilyHistory = col_integer(),
+    ##   ActivityLevel = col_integer()
+    ## )
+
+The first thing we want to know is whether *Diabetes\_extra* contains the full set of IDs found in *Diabetes*. This is important because if we start introducing NAs into our data, we want to understand why. Luckily, a join can help us wth this.
+
+The `anti_join` returns all rows from dataset 1 that are not in dataset 2.
+
+``` r
+anti_join(diabetes, diabetes_extra, by="ID")
+```
+
+    ## # A tibble: 8 x 10
+    ##      ID Pregnancies Glucose BloodPressure SkinThickness Insulin BMI  
+    ##   <int> <chr>         <int>         <int>         <int>   <int> <chr>
+    ## 1     8 10+             126            90             0       0 Obese
+    ## 2    35 0               131             0             0       0 Obese
+    ## 3   299 7-9             102            74            40     105 Obese
+    ## 4   690 1-3             112            68            22      94 Obese
+    ## 5   331 1-3             115            64            22       0 Obese
+    ## 6   477 4-6             129            90             7     326 Norm…
+    ## 7   360 1-3             130            64             0       0 Norm…
+    ## 8   175 7-9             154            78            32       0 Obese
+    ## # … with 3 more variables: DiabetesPedigreeFunction <dbl>, Age <int>,
+    ## #   Diabetes <int>
+
+There are 8 IDs that are in diabetes but not in *diabetes\_extra*. Let's store these "missing" IDs in a variable so we can see what happens to them when we join the datasets.
+
+``` r
+missingIDs <- anti_join(diabetes, diabetes_extra, by="ID") %>% 
+                        select(ID)
+
+# store the missing IDs as a vector rather than a dataframe
+missingIDs <- as.vector(missingIDs$ID) 
+```
+
+My go to is the `left_join` because it returns all rows from dataset 1 no matter what's in dataset 2, and I really don't want to be losing patients accidently. By default, `left_join` adds all columns from dataset 2 to dataset 1, but if we didn't want that, we could first use the select function on dataset 2 to get the variables we want, and then `%>%` to `left_join`.
+
+``` r
+left_join(diabetes, diabetes_extra, by="ID")
+```
+
+    ## # A tibble: 768 x 13
+    ##       ID Pregnancies Glucose BloodPressure SkinThickness Insulin BMI  
+    ##    <int> <chr>         <int>         <int>         <int>   <int> <chr>
+    ##  1    32 4-6             148            72            35       0 Obese
+    ##  2   559 1-3              85            66            29       0 Over…
+    ##  3   258 7-9             183            64             0       0 Norm…
+    ##  4     5 1-3              89            66            23      94 Over…
+    ##  5   668 0               137            40            35     168 Obese
+    ##  6   499 4-6             116            74             0       0 Over…
+    ##  7   585 1-3              78            50            32      88 Obese
+    ##  8   539 10+             115             0             0       0 Obese
+    ##  9   270 1-3             197            70            45     543 Obese
+    ## 10   214 7-9             125            96             0       0 Seve…
+    ## # … with 758 more rows, and 6 more variables:
+    ## #   DiabetesPedigreeFunction <dbl>, Age <int>, Diabetes <int>,
+    ## #   Cholesterol <int>, FamilyHistory <int>, ActivityLevel <int>
+
+``` r
+# store this to a dataframe of the same name
+diabetes <- left_join(diabetes, diabetes_extra, by="ID")
+```
+
+There we have it! Now patient cholesterol, family history, and activity level are added to the *diabetes* dataset - which now has 13 variables instead of 10. But let's see what happened to our missing observations.
+
+``` r
+diabetes %>% 
+    filter(ID %in% missingIDs) %>% 
+      select(ID, Cholesterol, FamilyHistory, ActivityLevel)
+```
+
+    ## # A tibble: 8 x 4
+    ##      ID Cholesterol FamilyHistory ActivityLevel
+    ##   <int>       <int>         <int>         <int>
+    ## 1     8          NA            NA            NA
+    ## 2    35          NA            NA            NA
+    ## 3   299          NA            NA            NA
+    ## 4   690          NA            NA            NA
+    ## 5   331          NA            NA            NA
+    ## 6   477          NA            NA            NA
+    ## 7   360          NA            NA            NA
+    ## 8   175          NA            NA            NA
+
+The IDs that weren't in *diabetes\_extra* have been retained in *diabetes*, but the new variables were assigned NA for those observations. That seems about right seeing as they really were missing, but if we wanted, we could replace the NAs with another value, how about we call them "missing" instead. `replace_na` is part of the tidy family.
+
+``` r
+diabetes %>% 
+    replace_na(list(Cholesterol="missing", FamilyHistory="missing", ActivityLevel="missing")) %>% 
+       filter(ID %in% missingIDs) %>% 
+            select(ID, Cholesterol, FamilyHistory, ActivityLevel)
+```
+
+    ## # A tibble: 8 x 4
+    ##      ID Cholesterol FamilyHistory ActivityLevel
+    ##   <int> <chr>       <chr>         <chr>        
+    ## 1     8 missing     missing       missing      
+    ## 2    35 missing     missing       missing      
+    ## 3   299 missing     missing       missing      
+    ## 4   690 missing     missing       missing      
+    ## 5   331 missing     missing       missing      
+    ## 6   477 missing     missing       missing      
+    ## 7   360 missing     missing       missing      
+    ## 8   175 missing     missing       missing
+
+**That's it!** :clap: :clap: I hope this workshop helped to make R something that makes your life easier rather than harder (and is *maybe* even just a little bit fun :wink:).
+
+------------------------------------------------------------------------
+
 **Extras:** Some other verbs that are part of the tidyverse and therefore very `%>%`able:
 
 -   `count()`: very similar to `table()` from base R.
@@ -785,5 +911,4 @@ diabetes %>%
 -   `slice()`: reference rows to keep (or drop)
 -   `lag()`: lag a row x number of times
 -   `first()`: select the first row (in a group for example)
--   `replace_na()`: replace NA with another value
 -   `rowwise()`: the opposite of `group_by()`
