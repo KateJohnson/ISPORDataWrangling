@@ -510,7 +510,7 @@ What's happening here? Let's write it down:
 
 Now that we're familiar with `%>%`, let's keep using it as we learn our remaining two verbs: `mutate()` and `summarise()`
 
-### Use `mutate()` to create new variables
+### 5. Use `mutate()` to create new variables
 
 I want diabetes pedigree function to be expressed as a percentage rather than a proportion.
 
@@ -586,7 +586,7 @@ diabetes %>%
     ## #   DiabetesPedigreeFunction <dbl>, Age <dbl>, Diabetes <dbl>,
     ## #   GI.Ratio <dbl>
 
-### We can `summarise()` our data
+### 6. We can `summarise()` our data
 
 Our last verb is used to create aggregated summarises our data. It is especially helpful when used in conjuction with `group_by()`
 
