@@ -400,7 +400,9 @@ missingIDs <- as.vector(missingIDs$ID)
 My go to is the `left_join` because it returns all rows from dataset 1 no matter what's in dataset 2, and I really don't want to be losing patients accidently. By default, `left_join` adds all columns from dataset 2 to dataset 1, but if we didn't want that, we could first use the select function on dataset 2 to get the variables we want, and then `%>%` to `left_join`.
 
 ```{r}
-left_join(diabetes, diabetes_extra, by="ID")
+left_join(diabetes, diabetes_extra, by="ID") %>% 
+      select(ID, Cholesterol, FamilyHistory, ActivityLevel) %>% 
+          arrange(ID)
 
 # store this to a dataframe of the same name
 diabetes <- left_join(diabetes, diabetes_extra, by="ID")

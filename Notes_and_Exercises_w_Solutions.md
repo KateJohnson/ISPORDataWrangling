@@ -834,25 +834,25 @@ missingIDs <- as.vector(missingIDs$ID)
 My go to is the `left_join` because it returns all rows from dataset 1 no matter what's in dataset 2, and I really don't want to be losing patients accidently. By default, `left_join` adds all columns from dataset 2 to dataset 1, but if we didn't want that, we could first use the select function on dataset 2 to get the variables we want, and then `%>%` to `left_join`.
 
 ``` r
-left_join(diabetes, diabetes_extra, by="ID")
+left_join(diabetes, diabetes_extra, by="ID") %>% 
+      select(ID, Cholesterol, FamilyHistory, ActivityLevel) %>% 
+          arrange(ID)
 ```
 
-    ## # A tibble: 768 x 13
-    ##       ID Pregnancies Glucose BloodPressure SkinThickness Insulin BMI  
-    ##    <int> <chr>         <int>         <int>         <int>   <int> <chr>
-    ##  1    32 4-6             148            72            35       0 Obese
-    ##  2   559 1-3              85            66            29       0 Over…
-    ##  3   258 7-9             183            64             0       0 Norm…
-    ##  4     5 1-3              89            66            23      94 Over…
-    ##  5   668 0               137            40            35     168 Obese
-    ##  6   499 4-6             116            74             0       0 Over…
-    ##  7   585 1-3              78            50            32      88 Obese
-    ##  8   539 10+             115             0             0       0 Obese
-    ##  9   270 1-3             197            70            45     543 Obese
-    ## 10   214 7-9             125            96             0       0 Seve…
-    ## # … with 758 more rows, and 6 more variables:
-    ## #   DiabetesPedigreeFunction <dbl>, Age <int>, Diabetes <int>,
-    ## #   Cholesterol <int>, FamilyHistory <int>, ActivityLevel <int>
+    ## # A tibble: 768 x 4
+    ##       ID Cholesterol FamilyHistory ActivityLevel
+    ##    <int>       <int>         <int>         <int>
+    ##  1     1         197             0             4
+    ##  2     2         215             1             1
+    ##  3     3         231             0             2
+    ##  4     4         277             0             2
+    ##  5     5         181             0             2
+    ##  6     6         249             0             4
+    ##  7     7         135             1             2
+    ##  8     8          NA            NA            NA
+    ##  9     9         188             0             2
+    ## 10    10         215             0             5
+    ## # … with 758 more rows
 
 ``` r
 # store this to a dataframe of the same name
