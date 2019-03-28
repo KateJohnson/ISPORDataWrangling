@@ -1,0 +1,382 @@
+---
+title: "Data Wrangling in R for Health Outcomes Research"
+output: github_document
+keep.md: true
+---
+
+The objective of this workshop is to provide an introduction to data wrangling in R using the tidyverse. By the end of this workshop, you should be able to:
+
+1. Use a project oriented workflow and an R markdown document.
+2. Perform simple data manipulations using the 5 dplyr verbs (`select`, `filter`, `arrange`, `mutate`, `summarise`, `group_by`), and chain these operations together using piping (`%>%`).
+3. Be aware of the library of `join` functions that allow you to merge datasets together based on a common variable(s).
+
+
+## Objective 1: Setting up our workflow
+
+First, let's load the [tidyverse](https://www.tidyverse.org/), which is an "an opinionated collection of R packages designed for data science. All packages share an underlying design philosophy, grammar, and data structures." The operate in parallel to, and often in place of, the set of packages included in base R.
+
+```{r}
+#install.packages("tidyverse")
+library(tidyverse)
+
+# some other packages that we'll need down the road
+#install.packages("here")
+library(here)
+#install.packages("readr")
+library(readr)
+```
+
+
+For this workshop, we're going to work with a dataset from the National Institute of Diabetes and Digestive and Kidney Diseases that I pulled from [kaggle](https://www.kaggle.com). The data was collected for the purpose of developing a model to predict the occurence of diabetes mellitus among a group of Pima Indians. You can find more details on the data [here](https://www.kaggle.com/uciml/pima-indians-diabetes-database).
+
+Let's load the data into R and check it out:
+
+```{r}
+diabetes <- read_csv(here("Data/diabetes.csv"))
+```
+
+
+(Aside: Check out this [this](https://www.tidyverse.org/articles/2017/12/workflow-vs-script/) blogpost by Jenny Bryan about best practices for getting your data into R. *Hint:* if you use code like this: 'rm(list=ls())' she will "set your computer on :fire:."" 
+
+## Explore the data
+
+So what do we have here?
+
+```{r}
+glimpse(diabetes)
+```
+
+Let's get some basic summaries of each of the variables so that we have an idea of what's in there:
+
+```{r}
+summary(diabetes)
+```
+
+What are some things we might want to check when we first bring our data into R? Let's list them here:
+
+  - ...
+
+
+## Objective 2: Data manipulations using dplyr
+
+(This summary is taken from the [STAT 545](http://stat545.com/) class notes.)
+
+The six main dplyr functions for data manipulation are:
+
+> - Pick variables by their names (`select()`).
+> - Pick observations by their values (`filter()`).
+> - Reorder the rows (`arrange()`).
+> - Create new variables with functions of existing variables (`mutate()`).
+> - Collapse many values down to a single summary (`summarise()`).
+
+Then there's `group_by()`, which can be used in conjunction with all of these.
+
+And `%>%` (piping) joins them all together into one happy family. 
+
+---
+
+### 1. `select()` works on variables
+
+Let's get started with the first of our dplyr verbs, `select()`.
+
+```{r}
+select(diabetes, ID, Pregnancies, Glucose)
+```
+
+Or, equivalently:
+
+```{r}
+select(diabetes, ID:Glucose)
+```
+
+But be careful with not explicitly referencing variables, and *please* don't do this:
+
+```{r}
+select(diabetes, 1,2,3)
+```
+
+`select()` has a lot of handy tricks:
+
+  - `everything()` to select all variables
+  - `-` to drop variables. 
+  - Use `=` within select to rename variables (*New_name = Old_name*)
+  - Reposition variables based on their order in `select()`
+  
+I want to yoink Diabetes and put it in the very first position in my dataset:
+
+```{r}
+select(diabetes, Diabetes, everything())
+```
+
+**Exercise:**
+
+- Create a temporary dataframe called *Diab.temp*, with the *Diabetes* variable renamed to *Diab.status* and the *Pregancies* variable dropped.
+
+
+---
+
+### 2. `filter()` works on rows
+
+Select works on columns, and `filter()` works on rows.
+
+Some useful logical expressions to refer back to: 
+
+Logical expressions are governed by __relational operators__, that output either `TRUE` or `FALSE` based on the validity of the statement you give it. Here's a summary of the operators:
+
+| Operation | Outputs `TRUE` or `FALSE` based on the validity of the statement... |
+| ------ | ----- |
+| `a == b` | `a` is equal to `b` |
+| `a != b` | `a` is not equal to `b`. |
+| `a > b` | `a` is greater than `b`. |
+| `a < b` | `a` is less than `b`. |
+| `a >= b` | `a` is greater than or equal to `b`. |
+| `a <= b` | `a` is less than or equal to `b`. |
+| `a %in% b` | `a` is an element in `b`. | 
+
+(Full credit to [STAT 545](http://stat545.com/) for this handy table)
+
+We can negate all these operations by wrapping them in brackets so: `!(a %in% b)` reads `a` is NOT an element in `b`.
+
+Let's start by filtering all observations in which blood glucose levels are greater than 100.
+
+```{r}
+filter(diabetes, Glucose>100)
+```
+
+How about only data for people who are Obsese?
+
+```{r}
+filter(diabetes, BMI=="Obese")
+```
+
+Now I want people who are obsese or morbidly obese.
+
+```{r}
+filter(diabetes, BMI=="Obese" | BMI=="Morbidly Obese")
+```
+
+**Exercises**
+
+- Can you think of another way to select obese and morbidly obese people?
+
+
+- Filter observations for people who are 25 to 50 years old.
+
+
+- Exclude observations where the patient has had 10 or more pregnancies.
+
+
+
+---
+
+### 3. `arrange()` changes the order of rows
+
+Now that we've got `select` and `filter()` covered. Let's slip in `arrange()` quickly.
+
+```{r}
+arrange(diabetes, ID)
+```
+
+We can arrange by multiple variables. You can `desc()` too.
+
+Ordered by BMI, and then from oldest to youngest.
+
+```{r}
+arrange(diabetes, BMI, desc(Age))
+```
+
+How is arrange handling a categorical variable?
+
+
+---
+
+### 4. `%>%` chains operations together
+
+Alrighty then, now that we've got `select()`, `filter()` and `arrange()`, let's `%>%` them together!
+
+The power of piping:
+
+```{r}
+diabetes %>%
+      select(id=ID, Glucose, Diabetes) %>%
+        filter(Glucose <= 100) %>%
+          arrange(id)
+```
+
+Another example:
+
+```{r}
+diabetes %>% 
+    filter(BMI=="Obese", Age>=50) %>% 
+      select(ID, Diabetes, BloodPressure) %>% 
+        arrange(desc(BloodPressure))
+```
+
+What's happening here? Let's write it down:
+
+  - ...
+
+
+Now that we're familiar with `%>%`, let's keep using it as we learn our remaining two verbs: `mutate()` and `summarise()`
+
+
+### Use `mutate()` to create new variables
+
+I want diabetes pedigree function to be expressed as a percentage rather than a proportion.
+
+```{r}
+diabetes %>% 
+  mutate(DiabetesPedigreePercent= DiabetesPedigreeFunction * 100)
+```
+
+
+**Exercises:** 
+
+- Make a new variable called *GlucoseDiff*, which equals the difference between each patient's glucose level and the average glucose level for all patients. Then reduce the dataset to only the *ID*, *Glucose*, and *GlucoseDiff* variables.
+
+
+- Filter the dataset to include only patients with insulin level not equal to 0, and then create a new variable called *GI.Ratio* that gives the ratio of their glucose to insulin levels
+
+
+
+### We can `summarise()` our data
+
+Our last verb is used to create aggregated summarises our data. It is especially helpful when used in conjuction with `group_by()`
+
+
+Let's start with some counting. The `n()` function is good for this.
+
+How many people do we have in each BMI category?
+
+```{r}
+diabetes %>% 
+    group_by(BMI) %>% 
+      summarise(number = n())
+```
+
+FYI: You could also pipe to `tally()` which is equivalent to `summarise(n())` here.
+
+
+Let's see if there might be some relation betwen BMI and age, by calculating the average age and standard deviation within each BMI category. 
+
+```{r}
+diabetes %>% 
+  group_by(BMI) %>% 
+    summarise(AverageAge= mean(Age), SDAge= sd(Age))
+```
+
+Now I want to know the average age *and* the proportion of people with diabetes in each BMI category.
+
+```{r}
+diabetes %>% 
+  group_by(BMI, Diabetes) %>% 
+    summarise(AverageAge= mean(Age), Number = n()) %>% 
+      mutate(Prop= Number/sum(Number))
+```
+
+**Exercises:** 
+
+- What is the proportion of patients with glucose over 120 that have diabetes? 
+*Hint:* You can use a continous variable as a grouping factor
+
+
+
+### Challenge exercises
+
+Your turn! 
+
+Your mission is to determine which characteristic (or set of characteristics) differs the most between diabetic and non-diabetic patients. We'll flag these variables as being potentially important to include in a future predictive model.
+
+- **(Task 1)** Let's start by picking a few variables that you expect to differ a lot based on diabetes status (and at least one that's continuous, and one that's categorical), and then use a staistic of your choice (for example: mean, median, proportion) to summarise that variable across diabetes categories. 
+
+*For example, you could calculate the average age, blood pressure, and glucose level among diabetic and non-diabetic patients. In a seperate pipe operation, you could do the same for the proportion of people in each of the pregnancy categories.*
+
+  
+
+
+We have a bit of a problem with units of the continuous variables, don't we? It would be much better if we could express glucose and blood pressure in the same units so that they would be comparable. Let's try to do that using the `scale()` function.
+
+- **(Task 2)** Choose a subset of (continous) variables of interest, scale them, and then calculate the difference between diabeties categories using this new, scaled variable. Which variable differs the most between diabetic and non-diabetic patients?
+
+
+
+- **(Task 3)** **Bonus:** (For the experienced data wrangler) Do the same as question 2, but this time, scale all the continous variables in the same step, and (in another step) calculate the difference in their means between diabetes groups. Try to do this **without** explicitly calling the variable names. 
+
+You may find the conditional functions `select_if()`, `mutate_at()` and `summarise_at()`  very helpful here, because there are some continous variables (ie. ID and Diabetes status), you won't want to scale.
+
+
+---
+
+## Objective 3: Joining datasets
+
+Dplyr has a set of join functions that allow you to merge datasets together based on a commmon variable(s). If you speak SQL, stop here! These are just the standard SQL joins implemented in R. If you don't, check out this very [handy cheatsheet](https://stat545.com/bit001_dplyr-cheatsheet.html) courtesy of Jenny Bryan that describes all the available join functions and what they do. Below, we'll go through a sample workflow when we have a primary dataset and want to link in additional information from another dataset.
+
+We'll stick with diabetes as our primary dataset, but now we have another dataset, *Diabetes_extra*, which contains additional variables that we want to link in. The ID variable was used to identify individuals in both datasets. 
+(**Disclosure:** I made this data up.)
+
+```{r}
+diabetes_extra <- read_csv(here("Data/diabetes_extra.csv"))
+```
+
+The first thing we want to know is whether *Diabetes_extra* contains the full set of IDs found in *Diabetes*. This is important because if we start introducing NAs into our data, we want to understand why. Luckily, a join can help us wth this. 
+
+The `anti_join` returns all rows from dataset 1 that are not in dataset 2. 
+
+```{r}
+anti_join(diabetes, diabetes_extra, by="ID")
+```
+
+There are 8 IDs that are in *diabetes* but not in *diabetes_extra*. Let's store these "missing" IDs in a variable so we can see what happens to them when we join the datasets.
+
+```{r}
+missingIDs <- anti_join(diabetes, diabetes_extra, by="ID") %>% 
+                        select(ID)
+
+# store the missing IDs as a vector rather than a dataframe
+missingIDs <- as.vector(missingIDs$ID) 
+```
+
+My go to is the `left_join` because it returns all rows from dataset 1 no matter what's in dataset 2, and I really don't want to be losing patients in my master dataset accidently. By default, `left_join` adds all columns from dataset 2 to dataset 1, but if we didn't want that, we could first use `select` on dataset 2 to get only the variables we want, and then `%>%` to a `left_join`.
+
+```{r}
+left_join(diabetes, diabetes_extra, by="ID") %>% 
+      select(ID, BloodPressure, BMI, Cholesterol, FamilyHistory, ActivityLevel) %>% 
+          arrange(ID)
+
+# store this to a dataframe of the same name
+diabetes <- left_join(diabetes, diabetes_extra, by="ID")
+```
+
+There we have it! Now patient cholesterol, family history, and activity level are added to the *diabetes*
+dataset - which now has 13 variables instead of 10. But let's see what happened to our missing observations.
+
+```{r}
+diabetes %>% 
+    filter(ID %in% missingIDs) %>% 
+      select(ID, Cholesterol, FamilyHistory, ActivityLevel)
+```
+
+The IDs that weren't in *diabetes_extra* have been retained in *diabetes*, but the new variables were assigned NA for those observations. That seems about right seeing as they really were missing, but if we wanted, we could replace the NAs with another value, how about we call them "missing" instead. `replace_na` is part of the tidy family.
+
+```{r}
+diabetes %>% 
+    replace_na(list(Cholesterol="missing", FamilyHistory="missing", ActivityLevel="missing")) %>% 
+       filter(ID %in% missingIDs) %>% 
+            select(ID, Cholesterol, FamilyHistory, ActivityLevel)
+```
+
+**That's it!** :clap: :clap: I hope this workshop helped to make R something that makes your life easier rather than harder (and is *maybe* even just a little bit fun :wink:).
+
+---
+
+**Extras:**
+Some other verbs that are part of the tidyverse and therefore very `%>%`able:
+
+  - `count()`: very similar to `table()` from base R.
+  - `rename()`: rename a variable (same as using = in `select()`) 
+  - `slice()`: reference rows to keep (or drop)
+  - `lag()`: lag a row x number of times
+  - `first()`: select the first row (in a group for example)
+  - `rowwise()`: the opposite of `group_by()`
+
+
