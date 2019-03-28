@@ -19,7 +19,7 @@ usethis::use_course("https://github.com/KateJohnson/ISPORDataWrangling/archive/m
 
 To see the notes and excercises for the workshop, see [here](https://github.com/KateJohnson/ISPORDataWrangling/blob/master/Notes_and_Exercises.md).
 
-To submit feedback for the workshop (*pretty please!*) [click here](https://www.surveymonkey.com/r/VXBFFPG) 
+To submit feedback for the workshop (*pretty please*) [click here](https://www.surveymonkey.com/r/VXBFFPG). 
 
 <p align="center">
   <img width="400" height="250" src="https://user-images.githubusercontent.com/27313003/54243498-f7f8fb80-44e5-11e9-8815-5c1f7faaa8b9.png">
