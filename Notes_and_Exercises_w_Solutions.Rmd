@@ -232,6 +232,7 @@ What's happening here? Let's write it down:
 
 Now that we're familiar with `%>%`, let's keep using it as we learn our remaining two verbs: `mutate()` and `summarise()`
 
+---
 
 ### 5. Use `mutate()` to create new variables
 
@@ -261,6 +262,7 @@ diabetes %>%
     mutate(GI.Ratio = Glucose/Insulin)
 ```
 
+---
 
 ### 6. We can `summarise()` our data
 
@@ -309,6 +311,7 @@ diabetes %>%
         mutate(Prop= Number/sum(Number))
 ```
 
+---
 
 ### Challenge exercises
 

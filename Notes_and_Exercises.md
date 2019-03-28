@@ -446,6 +446,8 @@ What's happening here? Let's write it down:
 
 Now that we're familiar with `%>%`, let's keep using it as we learn our remaining two verbs: `mutate()` and `summarise()`
 
+------------------------------------------------------------------------
+
 ### 5. Use `mutate()` to create new variables
 
 I want diabetes pedigree function to be expressed as a percentage rather than a proportion.
@@ -477,6 +479,8 @@ diabetes %>%
 -   Make a new variable called *GlucoseDiff*, which equals the difference between each patient's glucose level and the average glucose level for all patients. Then reduce the dataset to only the *ID*, *Glucose*, and *GlucoseDiff* variables.
 
 -   Filter the dataset to include only patients with insulin level not equal to 0, and then create a new variable called *GI.Ratio* that gives the ratio of their glucose to insulin levels
+
+------------------------------------------------------------------------
 
 ### 6. We can `summarise()` our data
 
@@ -550,6 +554,8 @@ diabetes %>%
 **Exercises:**
 
 -   What is the proportion of patients with glucose over 120 that have diabetes? *Hint:* You can use a continous variable as a grouping factor
+
+------------------------------------------------------------------------
 
 ### Challenge exercises
 
