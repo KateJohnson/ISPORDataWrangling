@@ -17,16 +17,16 @@ First, let's load the [tidyverse](https://www.tidyverse.org/), which is an "an o
 library(tidyverse)
 ```
 
-    ## ── Attaching packages ─────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
+    ## -- Attaching packages ------------------------------------------------------------------------------------- tidyverse 1.2.1 --
 
-    ## ✔ ggplot2 3.0.0     ✔ purrr   0.3.0
-    ## ✔ tibble  2.0.1     ✔ dplyr   0.7.8
-    ## ✔ tidyr   0.8.1     ✔ stringr 1.4.0
-    ## ✔ readr   1.1.1     ✔ forcats 0.3.0
+    ## v ggplot2 3.1.0       v purrr   0.3.1  
+    ## v tibble  2.0.1       v dplyr   0.8.0.1
+    ## v tidyr   0.8.3       v stringr 1.4.0  
+    ## v readr   1.3.1       v forcats 0.3.0
 
-    ## ── Conflicts ────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
-    ## ✖ dplyr::filter() masks stats::filter()
-    ## ✖ dplyr::lag()    masks stats::lag()
+    ## -- Conflicts ---------------------------------------------------------------------------------------- tidyverse_conflicts() --
+    ## x dplyr::filter() masks stats::filter()
+    ## x dplyr::lag()    masks stats::lag()
 
 ``` r
 # some other packages that we'll need down the road
@@ -34,7 +34,7 @@ library(tidyverse)
 library(here)
 ```
 
-    ## here() starts at /Users/katejohnson/Google Drive/Workshops/ISPOR/DataWrangling/ISPORDataWrangling
+    ## here() starts at C:/Users/katemj91/Google Drive/Workshops/ISPOR/DataWrangling/ISPORDataWrangling
 
 ``` r
 #install.packages("readr")
@@ -51,16 +51,16 @@ diabetes <- read_csv(here("Data/diabetes.csv"))
 
     ## Parsed with column specification:
     ## cols(
-    ##   ID = col_integer(),
+    ##   ID = col_double(),
     ##   Pregnancies = col_character(),
-    ##   Glucose = col_integer(),
-    ##   BloodPressure = col_integer(),
-    ##   SkinThickness = col_integer(),
-    ##   Insulin = col_integer(),
+    ##   Glucose = col_double(),
+    ##   BloodPressure = col_double(),
+    ##   SkinThickness = col_double(),
+    ##   Insulin = col_double(),
     ##   BMI = col_character(),
     ##   DiabetesPedigreeFunction = col_double(),
-    ##   Age = col_integer(),
-    ##   Diabetes = col_integer()
+    ##   Age = col_double(),
+    ##   Diabetes = col_double()
     ## )
 
 (Aside: Check out this [this](https://www.tidyverse.org/articles/2017/12/workflow-vs-script/) blogpost by Jenny Bryan about best practices for getting your data into R. *Hint:* if you use code like this: 'rm(list=ls())' she will "set your computer on :fire:.""
@@ -76,16 +76,16 @@ glimpse(diabetes)
 
     ## Observations: 768
     ## Variables: 10
-    ## $ ID                       <int> 32, 559, 258, 5, 668, 499, 585, 539, 27…
-    ## $ Pregnancies              <chr> "4-6", "1-3", "7-9", "1-3", "0", "4-6",…
-    ## $ Glucose                  <int> 148, 85, 183, 89, 137, 116, 78, 115, 19…
-    ## $ BloodPressure            <int> 72, 66, 64, 66, 40, 74, 50, 0, 70, 96, …
-    ## $ SkinThickness            <int> 35, 29, 0, 23, 35, 0, 32, 0, 45, 0, 0, …
-    ## $ Insulin                  <int> 0, 0, 0, 94, 168, 0, 88, 0, 543, 0, 0, …
-    ## $ BMI                      <chr> "Obese", "Overweight", "Normal", "Overw…
-    ## $ DiabetesPedigreeFunction <dbl> 0.627, 0.351, 0.672, 0.167, 2.288, 0.20…
-    ## $ Age                      <int> 50, 31, 32, 21, 33, 30, 26, 29, 53, 54,…
-    ## $ Diabetes                 <int> 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0, …
+    ## $ ID                       <dbl> 32, 559, 258, 5, 668, 499, 585, 539, ...
+    ## $ Pregnancies              <chr> "4-6", "1-3", "7-9", "1-3", "0", "4-6...
+    ## $ Glucose                  <dbl> 148, 85, 183, 89, 137, 116, 78, 115, ...
+    ## $ BloodPressure            <dbl> 72, 66, 64, 66, 40, 74, 50, 0, 70, 96...
+    ## $ SkinThickness            <dbl> 35, 29, 0, 23, 35, 0, 32, 0, 45, 0, 0...
+    ## $ Insulin                  <dbl> 0, 0, 0, 94, 168, 0, 88, 0, 543, 0, 0...
+    ## $ BMI                      <chr> "Obese", "Overweight", "Normal", "Ove...
+    ## $ DiabetesPedigreeFunction <dbl> 0.627, 0.351, 0.672, 0.167, 2.288, 0....
+    ## $ Age                      <dbl> 50, 31, 32, 21, 33, 30, 26, 29, 53, 5...
+    ## $ Diabetes                 <dbl> 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0...
 
 Let's get some basic summaries of each of the variables so that we have an idea of what's in there:
 
@@ -148,7 +148,7 @@ select(diabetes, ID, Pregnancies, Glucose)
 
     ## # A tibble: 768 x 3
     ##       ID Pregnancies Glucose
-    ##    <int> <chr>         <int>
+    ##    <dbl> <chr>         <dbl>
     ##  1    32 4-6             148
     ##  2   559 1-3              85
     ##  3   258 7-9             183
@@ -159,7 +159,7 @@ select(diabetes, ID, Pregnancies, Glucose)
     ##  8   539 10+             115
     ##  9   270 1-3             197
     ## 10   214 7-9             125
-    ## # … with 758 more rows
+    ## # ... with 758 more rows
 
 Or, equivalently:
 
@@ -169,7 +169,7 @@ select(diabetes, ID:Glucose)
 
     ## # A tibble: 768 x 3
     ##       ID Pregnancies Glucose
-    ##    <int> <chr>         <int>
+    ##    <dbl> <chr>         <dbl>
     ##  1    32 4-6             148
     ##  2   559 1-3              85
     ##  3   258 7-9             183
@@ -180,7 +180,7 @@ select(diabetes, ID:Glucose)
     ##  8   539 10+             115
     ##  9   270 1-3             197
     ## 10   214 7-9             125
-    ## # … with 758 more rows
+    ## # ... with 758 more rows
 
 But be careful with not explicitly referencing variables, and *please* don't do this:
 
@@ -190,7 +190,7 @@ select(diabetes, 1,2,3)
 
     ## # A tibble: 768 x 3
     ##       ID Pregnancies Glucose
-    ##    <int> <chr>         <int>
+    ##    <dbl> <chr>         <dbl>
     ##  1    32 4-6             148
     ##  2   559 1-3              85
     ##  3   258 7-9             183
@@ -201,7 +201,7 @@ select(diabetes, 1,2,3)
     ##  8   539 10+             115
     ##  9   270 1-3             197
     ## 10   214 7-9             125
-    ## # … with 758 more rows
+    ## # ... with 758 more rows
 
 `select()` has a lot of handy tricks:
 
@@ -218,7 +218,7 @@ select(diabetes, Diabetes, everything())
 
     ## # A tibble: 768 x 10
     ##    Diabetes    ID Pregnancies Glucose BloodPressure SkinThickness Insulin
-    ##       <int> <int> <chr>         <int>         <int>         <int>   <int>
+    ##       <dbl> <dbl> <chr>         <dbl>         <dbl>         <dbl>   <dbl>
     ##  1        1    32 4-6             148            72            35       0
     ##  2        0   559 1-3              85            66            29       0
     ##  3        1   258 7-9             183            64             0       0
@@ -229,12 +229,12 @@ select(diabetes, Diabetes, everything())
     ##  8        0   539 10+             115             0             0       0
     ##  9        1   270 1-3             197            70            45     543
     ## 10        1   214 7-9             125            96             0       0
-    ## # … with 758 more rows, and 3 more variables: BMI <chr>,
-    ## #   DiabetesPedigreeFunction <dbl>, Age <int>
+    ## # ... with 758 more rows, and 3 more variables: BMI <chr>,
+    ## #   DiabetesPedigreeFunction <dbl>, Age <dbl>
 
 **Exercise:**
 
--   Create a temporary dataframe called *Diab.temp* with the *Diabetes* variable renamed to *Diab.status* and the *Pregancies* variable dropped.
+-   Create a temporary dataframe called *Diab.temp*, with the *Diabetes* variable renamed to *Diab.status* and the *Pregancies* variable dropped.
 
 ``` r
 Diab.temp <- select(diabetes, -Pregnancies, Diab.status=Diabetes)
@@ -272,19 +272,19 @@ filter(diabetes, Glucose>100)
 
     ## # A tibble: 554 x 10
     ##       ID Pregnancies Glucose BloodPressure SkinThickness Insulin BMI  
-    ##    <int> <chr>         <int>         <int>         <int>   <int> <chr>
+    ##    <dbl> <chr>         <dbl>         <dbl>         <dbl>   <dbl> <chr>
     ##  1    32 4-6             148            72            35       0 Obese
-    ##  2   258 7-9             183            64             0       0 Norm…
+    ##  2   258 7-9             183            64             0       0 Norm~
     ##  3   668 0               137            40            35     168 Obese
-    ##  4   499 4-6             116            74             0       0 Over…
+    ##  4   499 4-6             116            74             0       0 Over~
     ##  5   539 10+             115             0             0       0 Obese
     ##  6   270 1-3             197            70            45     543 Obese
-    ##  7   214 7-9             125            96             0       0 Seve…
+    ##  7   214 7-9             125            96             0       0 Seve~
     ##  8   733 4-6             110            92             0       0 Obese
     ##  9   353 10+             168            74             0       0 Obese
-    ## 10   162 10+             139            80             0       0 Over…
-    ## # … with 544 more rows, and 3 more variables:
-    ## #   DiabetesPedigreeFunction <dbl>, Age <int>, Diabetes <int>
+    ## 10   162 10+             139            80             0       0 Over~
+    ## # ... with 544 more rows, and 3 more variables:
+    ## #   DiabetesPedigreeFunction <dbl>, Age <dbl>, Diabetes <dbl>
 
 How about only data for people who are Obsese?
 
@@ -294,7 +294,7 @@ filter(diabetes, BMI=="Obese")
 
     ## # A tibble: 430 x 10
     ##       ID Pregnancies Glucose BloodPressure SkinThickness Insulin BMI  
-    ##    <int> <chr>         <int>         <int>         <int>   <int> <chr>
+    ##    <dbl> <chr>         <dbl>         <dbl>         <dbl>   <dbl> <chr>
     ##  1    32 4-6             148            72            35       0 Obese
     ##  2   668 0               137            40            35     168 Obese
     ##  3   585 1-3              78            50            32      88 Obese
@@ -305,8 +305,8 @@ filter(diabetes, BMI=="Obese")
     ##  8   386 1-3             189            60            23     846 Obese
     ##  9   533 1-3             103            30            38      83 Obese
     ## 10   164 1-3             115            70            30      96 Obese
-    ## # … with 420 more rows, and 3 more variables:
-    ## #   DiabetesPedigreeFunction <dbl>, Age <int>, Diabetes <int>
+    ## # ... with 420 more rows, and 3 more variables:
+    ## #   DiabetesPedigreeFunction <dbl>, Age <dbl>, Diabetes <dbl>
 
 Now I want people who are obsese or morbidly obese.
 
@@ -316,7 +316,7 @@ filter(diabetes, BMI=="Obese" | BMI=="Morbidly Obese")
 
     ## # A tibble: 465 x 10
     ##       ID Pregnancies Glucose BloodPressure SkinThickness Insulin BMI  
-    ##    <int> <chr>         <int>         <int>         <int>   <int> <chr>
+    ##    <dbl> <chr>         <dbl>         <dbl>         <dbl>   <dbl> <chr>
     ##  1    32 4-6             148            72            35       0 Obese
     ##  2   668 0               137            40            35     168 Obese
     ##  3   585 1-3              78            50            32      88 Obese
@@ -325,10 +325,10 @@ filter(diabetes, BMI=="Obese" | BMI=="Morbidly Obese")
     ##  6   733 4-6             110            92             0       0 Obese
     ##  7   353 10+             168            74             0       0 Obese
     ##  8   386 1-3             189            60            23     846 Obese
-    ##  9   692 0               118            84            47     230 Morb…
+    ##  9   692 0               118            84            47     230 Morb~
     ## 10   533 1-3             103            30            38      83 Obese
-    ## # … with 455 more rows, and 3 more variables:
-    ## #   DiabetesPedigreeFunction <dbl>, Age <int>, Diabetes <int>
+    ## # ... with 455 more rows, and 3 more variables:
+    ## #   DiabetesPedigreeFunction <dbl>, Age <dbl>, Diabetes <dbl>
 
 **Exercises**
 
@@ -340,7 +340,7 @@ filter(diabetes, BMI %in% c("Obese","Morbidly Obese"))
 
     ## # A tibble: 465 x 10
     ##       ID Pregnancies Glucose BloodPressure SkinThickness Insulin BMI  
-    ##    <int> <chr>         <int>         <int>         <int>   <int> <chr>
+    ##    <dbl> <chr>         <dbl>         <dbl>         <dbl>   <dbl> <chr>
     ##  1    32 4-6             148            72            35       0 Obese
     ##  2   668 0               137            40            35     168 Obese
     ##  3   585 1-3              78            50            32      88 Obese
@@ -349,10 +349,10 @@ filter(diabetes, BMI %in% c("Obese","Morbidly Obese"))
     ##  6   733 4-6             110            92             0       0 Obese
     ##  7   353 10+             168            74             0       0 Obese
     ##  8   386 1-3             189            60            23     846 Obese
-    ##  9   692 0               118            84            47     230 Morb…
+    ##  9   692 0               118            84            47     230 Morb~
     ## 10   533 1-3             103            30            38      83 Obese
-    ## # … with 455 more rows, and 3 more variables:
-    ## #   DiabetesPedigreeFunction <dbl>, Age <int>, Diabetes <int>
+    ## # ... with 455 more rows, and 3 more variables:
+    ## #   DiabetesPedigreeFunction <dbl>, Age <dbl>, Diabetes <dbl>
 
 -   Filter observations for people who are 25 to 50 years old.
 
@@ -362,19 +362,19 @@ filter(diabetes, Age <=50, Age>= 25)
 
     ## # A tibble: 468 x 10
     ##       ID Pregnancies Glucose BloodPressure SkinThickness Insulin BMI  
-    ##    <int> <chr>         <int>         <int>         <int>   <int> <chr>
+    ##    <dbl> <chr>         <dbl>         <dbl>         <dbl>   <dbl> <chr>
     ##  1    32 4-6             148            72            35       0 Obese
-    ##  2   559 1-3              85            66            29       0 Over…
-    ##  3   258 7-9             183            64             0       0 Norm…
+    ##  2   559 1-3              85            66            29       0 Over~
+    ##  3   258 7-9             183            64             0       0 Norm~
     ##  4   668 0               137            40            35     168 Obese
-    ##  5   499 4-6             116            74             0       0 Over…
+    ##  5   499 4-6             116            74             0       0 Over~
     ##  6   585 1-3              78            50            32      88 Obese
     ##  7   539 10+             115             0             0       0 Obese
     ##  8   733 4-6             110            92             0       0 Obese
     ##  9   353 10+             168            74             0       0 Obese
-    ## 10    13 7-9             100             0             0       0 Over…
-    ## # … with 458 more rows, and 3 more variables:
-    ## #   DiabetesPedigreeFunction <dbl>, Age <int>, Diabetes <int>
+    ## 10    13 7-9             100             0             0       0 Over~
+    ## # ... with 458 more rows, and 3 more variables:
+    ## #   DiabetesPedigreeFunction <dbl>, Age <dbl>, Diabetes <dbl>
 
 -   Exclude observations where the patient has had 10 or more pregnancies.
 
@@ -384,19 +384,19 @@ filter(diabetes, Pregnancies != "10+")
 
     ## # A tibble: 710 x 10
     ##       ID Pregnancies Glucose BloodPressure SkinThickness Insulin BMI  
-    ##    <int> <chr>         <int>         <int>         <int>   <int> <chr>
+    ##    <dbl> <chr>         <dbl>         <dbl>         <dbl>   <dbl> <chr>
     ##  1    32 4-6             148            72            35       0 Obese
-    ##  2   559 1-3              85            66            29       0 Over…
-    ##  3   258 7-9             183            64             0       0 Norm…
-    ##  4     5 1-3              89            66            23      94 Over…
+    ##  2   559 1-3              85            66            29       0 Over~
+    ##  3   258 7-9             183            64             0       0 Norm~
+    ##  4     5 1-3              89            66            23      94 Over~
     ##  5   668 0               137            40            35     168 Obese
-    ##  6   499 4-6             116            74             0       0 Over…
+    ##  6   499 4-6             116            74             0       0 Over~
     ##  7   585 1-3              78            50            32      88 Obese
     ##  8   270 1-3             197            70            45     543 Obese
-    ##  9   214 7-9             125            96             0       0 Seve…
+    ##  9   214 7-9             125            96             0       0 Seve~
     ## 10   733 4-6             110            92             0       0 Obese
-    ## # … with 700 more rows, and 3 more variables:
-    ## #   DiabetesPedigreeFunction <dbl>, Age <int>, Diabetes <int>
+    ## # ... with 700 more rows, and 3 more variables:
+    ## #   DiabetesPedigreeFunction <dbl>, Age <dbl>, Diabetes <dbl>
 
 ------------------------------------------------------------------------
 
@@ -410,19 +410,19 @@ arrange(diabetes, ID)
 
     ## # A tibble: 768 x 10
     ##       ID Pregnancies Glucose BloodPressure SkinThickness Insulin BMI  
-    ##    <int> <chr>         <int>         <int>         <int>   <int> <chr>
+    ##    <dbl> <chr>         <dbl>         <dbl>         <dbl>   <dbl> <chr>
     ##  1     1 0               117             0             0       0 Obese
-    ##  2     2 1-3             144            82            46     180 Morb…
-    ##  3     3 1-3             155            74            17      96 Over…
-    ##  4     4 4-6             125            78            31       0 Over…
-    ##  5     5 1-3              89            66            23      94 Over…
+    ##  2     2 1-3             144            82            46     180 Morb~
+    ##  3     3 1-3             155            74            17      96 Over~
+    ##  4     4 4-6             125            78            31       0 Over~
+    ##  5     5 1-3              89            66            23      94 Over~
     ##  6     6 4-6             125            80             0       0 Obese
-    ##  7     7 1-3              90            68             8       0 Norm…
+    ##  7     7 1-3              90            68             8       0 Norm~
     ##  8     8 10+             126            90             0       0 Obese
-    ##  9     9 1-3             119            54            13      50 Norm…
+    ##  9     9 1-3             119            54            13      50 Norm~
     ## 10    10 0                91            68            32     210 Obese
-    ## # … with 758 more rows, and 3 more variables:
-    ## #   DiabetesPedigreeFunction <dbl>, Age <int>, Diabetes <int>
+    ## # ... with 758 more rows, and 3 more variables:
+    ## #   DiabetesPedigreeFunction <dbl>, Age <dbl>, Diabetes <dbl>
 
 We can arrange by multiple variables. You can `desc()` too.
 
@@ -434,19 +434,19 @@ arrange(diabetes, BMI, desc(Age))
 
     ## # A tibble: 768 x 10
     ##       ID Pregnancies Glucose BloodPressure SkinThickness Insulin BMI  
-    ##    <int> <chr>         <int>         <int>         <int>   <int> <chr>
-    ##  1   129 0               173            78            32     265 Morb…
-    ##  2   260 7-9             171           110            24     240 Morb…
-    ##  3   608 4-6             134            80            37     370 Morb…
-    ##  4   525 0                67            76             0       0 Morb…
-    ##  5     2 1-3             144            82            46     180 Morb…
-    ##  6    85 10+             111            84            40       0 Morb…
-    ##  7   505 7-9             188            78             0       0 Morb…
-    ##  8   673 7-9              81            78            40      48 Morb…
-    ##  9   553 10+             103            68            40       0 Morb…
-    ## 10    78 10+             135             0             0       0 Morb…
-    ## # … with 758 more rows, and 3 more variables:
-    ## #   DiabetesPedigreeFunction <dbl>, Age <int>, Diabetes <int>
+    ##    <dbl> <chr>         <dbl>         <dbl>         <dbl>   <dbl> <chr>
+    ##  1   129 0               173            78            32     265 Morb~
+    ##  2   260 7-9             171           110            24     240 Morb~
+    ##  3   608 4-6             134            80            37     370 Morb~
+    ##  4   525 0                67            76             0       0 Morb~
+    ##  5     2 1-3             144            82            46     180 Morb~
+    ##  6    85 10+             111            84            40       0 Morb~
+    ##  7   505 7-9             188            78             0       0 Morb~
+    ##  8   673 7-9              81            78            40      48 Morb~
+    ##  9   553 10+             103            68            40       0 Morb~
+    ## 10    78 10+             135             0             0       0 Morb~
+    ## # ... with 758 more rows, and 3 more variables:
+    ## #   DiabetesPedigreeFunction <dbl>, Age <dbl>, Diabetes <dbl>
 
 How is arrange handling a categorical variable?
 
@@ -467,7 +467,7 @@ diabetes %>%
 
     ## # A tibble: 214 x 3
     ##       id Glucose Diabetes
-    ##    <int>   <int>    <int>
+    ##    <dbl>   <dbl>    <dbl>
     ##  1     5      89        0
     ##  2     7      90        0
     ##  3    10      91        0
@@ -478,7 +478,7 @@ diabetes %>%
     ##  8    23      95        0
     ##  9    24      89        0
     ## 10    26      93        0
-    ## # … with 204 more rows
+    ## # ... with 204 more rows
 
 Another example:
 
@@ -491,7 +491,7 @@ diabetes %>%
 
     ## # A tibble: 45 x 3
     ##       ID Diabetes BloodPressure
-    ##    <int>    <int>         <int>
+    ##    <dbl>    <dbl>         <dbl>
     ##  1   136        0           108
     ##  2    88        0           106
     ##  3   139        1           104
@@ -502,7 +502,7 @@ diabetes %>%
     ##  8   146        1            92
     ##  9   601        1            90
     ## 10   634        1            90
-    ## # … with 35 more rows
+    ## # ... with 35 more rows
 
 What's happening here? Let's write it down:
 
@@ -521,19 +521,19 @@ diabetes %>%
 
     ## # A tibble: 768 x 11
     ##       ID Pregnancies Glucose BloodPressure SkinThickness Insulin BMI  
-    ##    <int> <chr>         <int>         <int>         <int>   <int> <chr>
+    ##    <dbl> <chr>         <dbl>         <dbl>         <dbl>   <dbl> <chr>
     ##  1    32 4-6             148            72            35       0 Obese
-    ##  2   559 1-3              85            66            29       0 Over…
-    ##  3   258 7-9             183            64             0       0 Norm…
-    ##  4     5 1-3              89            66            23      94 Over…
+    ##  2   559 1-3              85            66            29       0 Over~
+    ##  3   258 7-9             183            64             0       0 Norm~
+    ##  4     5 1-3              89            66            23      94 Over~
     ##  5   668 0               137            40            35     168 Obese
-    ##  6   499 4-6             116            74             0       0 Over…
+    ##  6   499 4-6             116            74             0       0 Over~
     ##  7   585 1-3              78            50            32      88 Obese
     ##  8   539 10+             115             0             0       0 Obese
     ##  9   270 1-3             197            70            45     543 Obese
-    ## 10   214 7-9             125            96             0       0 Seve…
-    ## # … with 758 more rows, and 4 more variables:
-    ## #   DiabetesPedigreeFunction <dbl>, Age <int>, Diabetes <int>,
+    ## 10   214 7-9             125            96             0       0 Seve~
+    ## # ... with 758 more rows, and 4 more variables:
+    ## #   DiabetesPedigreeFunction <dbl>, Age <dbl>, Diabetes <dbl>,
     ## #   DiabetesPedigreePercent <dbl>
 
 **Exercises:**
@@ -548,7 +548,7 @@ diabetes %>%
 
     ## # A tibble: 768 x 3
     ##       ID Glucose GlucoseDiff
-    ##    <int>   <int>       <dbl>
+    ##    <dbl>   <dbl>       <dbl>
     ##  1    32     148       27.1 
     ##  2   559      85      -35.9 
     ##  3   258     183       62.1 
@@ -559,9 +559,9 @@ diabetes %>%
     ##  8   539     115       -5.89
     ##  9   270     197       76.1 
     ## 10   214     125        4.11
-    ## # … with 758 more rows
+    ## # ... with 758 more rows
 
--   Filter the dataset to include only patients with insluin level not equal to 0, and then create a new variable called *GI.Ratio* that gives the ratio of their glucose to insulin levels
+-   Filter the dataset to include only patients with insulin level not equal to 0, and then create a new variable called *GI.Ratio* that gives the ratio of their glucose to insulin levels
 
 ``` r
 diabetes %>% 
@@ -571,19 +571,19 @@ diabetes %>%
 
     ## # A tibble: 394 x 11
     ##       ID Pregnancies Glucose BloodPressure SkinThickness Insulin BMI  
-    ##    <int> <chr>         <int>         <int>         <int>   <int> <chr>
-    ##  1     5 1-3              89            66            23      94 Over…
+    ##    <dbl> <chr>         <dbl>         <dbl>         <dbl>   <dbl> <chr>
+    ##  1     5 1-3              89            66            23      94 Over~
     ##  2   668 0               137            40            35     168 Obese
     ##  3   585 1-3              78            50            32      88 Obese
     ##  4   270 1-3             197            70            45     543 Obese
     ##  5   386 1-3             189            60            23     846 Obese
-    ##  6   155 4-6             166            72            19     175 Over…
-    ##  7   692 0               118            84            47     230 Morb…
+    ##  6   155 4-6             166            72            19     175 Over~
+    ##  7   692 0               118            84            47     230 Morb~
     ##  8   533 1-3             103            30            38      83 Obese
     ##  9   164 1-3             115            70            30      96 Obese
     ## 10   253 1-3             126            88            41     235 Obese
-    ## # … with 384 more rows, and 4 more variables:
-    ## #   DiabetesPedigreeFunction <dbl>, Age <int>, Diabetes <int>,
+    ## # ... with 384 more rows, and 4 more variables:
+    ## #   DiabetesPedigreeFunction <dbl>, Age <dbl>, Diabetes <dbl>,
     ## #   GI.Ratio <dbl>
 
 ### We can `summarise()` our data
@@ -642,7 +642,7 @@ diabetes %>%
     ## # A tibble: 11 x 5
     ## # Groups:   BMI [6]
     ##    BMI                  Diabetes AverageAge Number   Prop
-    ##    <chr>                   <int>      <dbl>  <int>  <dbl>
+    ##    <chr>                   <dbl>      <dbl>  <int>  <dbl>
     ##  1 Morbidly Obese              0       32.5     13 0.371 
     ##  2 Morbidly Obese              1       33.7     22 0.629 
     ##  3 Normal                      0       31.1    101 0.935 
@@ -669,7 +669,7 @@ diabetes %>%
     ## # A tibble: 4 x 4
     ## # Groups:   Glucose > 120 [2]
     ##   `Glucose > 120` Diabetes Number  Prop
-    ##   <lgl>              <int>  <int> <dbl>
+    ##   <lgl>              <dbl>  <int> <dbl>
     ## 1 FALSE                  0    346 0.826
     ## 2 FALSE                  1     73 0.174
     ## 3 TRUE                   0    154 0.441
@@ -679,7 +679,7 @@ diabetes %>%
 
 Your turn!
 
-Your mission is to determine which characteristic (or set of characteristics) differs the most between diabetic and non-diabetic patients. To do this, you'll want to compare variables between diabetes and non-diabetes patients.
+Your mission is to determine which characteristic (or set of characteristics) differs the most between diabetic and non-diabetic patients. We'll flag these variables as being potentially important to include in a future predictive model.
 
 -   **(Task 1)** Let's start by picking a few variables that you expect to differ a lot based on diabetes status (and at least one that's continuous, and one that's categorical), and then use a staistic of your choice (for example: mean, median, proportion) to summarise that variable across diabetes categories.
 
@@ -694,7 +694,7 @@ diabetes %>%
 
     ## # A tibble: 2 x 4
     ##   Diabetes AverageAge AverageBP AverageGlucose
-    ##      <int>      <dbl>     <dbl>          <dbl>
+    ##      <dbl>      <dbl>     <dbl>          <dbl>
     ## 1        0       31.2      68.2           110.
     ## 2        1       37.1      70.8           141.
 
@@ -711,7 +711,7 @@ diabetes %>%
     ## # A tibble: 10 x 4
     ## # Groups:   Diabetes [2]
     ##    Diabetes Pregnancies     n  prop
-    ##       <int> <chr>       <int> <dbl>
+    ##       <dbl> <chr>       <int> <dbl>
     ##  1        0 0              73  0.15
     ##  2        1 0              38  0.14
     ##  3        0 1-3           238  0.48
@@ -731,25 +731,31 @@ We have a bit of a problem with units of the continuous variables, don't we? It 
 diabetes %>% 
     mutate(z.Age=scale(Age), z.BP=scale(BloodPressure), z.Glucose= scale(Glucose)) %>% 
       group_by(Diabetes) %>% 
-        summarise(AverageAge=mean(z.Age), AverageBP=mean(z.BP), AverageGlucose= mean(z.Glucose))
+        summarise(AverageAge=mean(z.Age), AverageBP=mean(z.BP), AverageGlucose= mean(z.Glucose)) %>%
+  # optional final step to reshape the data
+          gather(key="Predictor", value="Z.mean", AverageGlucose:AverageAge)
 ```
 
-    ## # A tibble: 2 x 4
-    ##   Diabetes AverageAge[,1] AverageBP[,1] AverageGlucose[,1]
-    ##      <int>          <dbl>         <dbl>              <dbl>
-    ## 1        0         -0.174       -0.0476             -0.341
-    ## 2        1          0.325        0.0888              0.637
+    ## # A tibble: 6 x 3
+    ##   Diabetes Predictor       Z.mean
+    ##      <dbl> <chr>            <dbl>
+    ## 1        0 AverageGlucose -0.341 
+    ## 2        1 AverageGlucose  0.637 
+    ## 3        0 AverageBP      -0.0476
+    ## 4        1 AverageBP       0.0888
+    ## 5        0 AverageAge     -0.174 
+    ## 6        1 AverageAge      0.325
 
--   **(Task 3)** **Bonus:** (For the experienced data wrangler) Do the same as question 2, but this time, scale all the continous variables in the same step, and (in another step) calculate the difference in their mean between diabetes groups. Try to do this **without** explicitly calling the variable names.
+-   **(Task 3)** **Bonus:** (For the experienced data wrangler) Do the same as question 2, but this time, scale all the continous variables in the same step, and (in another step) calculate the difference in their means between diabetes groups. Try to do this **without** explicitly calling the variable names.
 
-You may find the conditional functions `select_if()`, `mutate_at()` and `summarise_at()` very helpful here, because some continous variables (ie. ID and Diabetes status), you won't want to scale.
+You may find the conditional functions `select_if()`, `mutate_at()` and `summarise_at()` very helpful here, because there are some continous variables (ie. ID and Diabetes status), you won't want to scale.
 
 ``` r
 diabetes %>% 
     select_if(is.numeric) %>% 
       mutate_at(vars(-ID,-Diabetes), scale) %>% 
         group_by(Diabetes) %>% 
-          summarise_at(vars(-ID, -Diabetes), mean) %>% 
+          summarise_at(vars(-ID), mean) %>% 
 # you could stop here, but it's hard to compare the difference between groups with the variables spread 
 # out like this, and even harder to plot, so let's gather them
             gather(key="Predictor", value="Z.mean", Glucose:Age) %>%
@@ -760,7 +766,7 @@ diabetes %>%
     ## # A tibble: 12 x 4
     ## # Groups:   Predictor [6]
     ##    Diabetes Predictor                 Z.mean delta.z.mean
-    ##       <int> <chr>                      <dbl>        <dbl>
+    ##       <dbl> <chr>                      <dbl>        <dbl>
     ##  1        0 Glucose                  -0.341        NA    
     ##  2        1 Glucose                   0.637         0.978
     ##  3        0 BloodPressure            -0.0476       NA    
@@ -793,10 +799,10 @@ diabetes_extra <- read_csv(here("Data/diabetes_extra.csv"))
 
     ## Parsed with column specification:
     ## cols(
-    ##   ID = col_integer(),
-    ##   Cholesterol = col_integer(),
-    ##   FamilyHistory = col_integer(),
-    ##   ActivityLevel = col_integer()
+    ##   ID = col_double(),
+    ##   Cholesterol = col_double(),
+    ##   FamilyHistory = col_double(),
+    ##   ActivityLevel = col_double()
     ## )
 
 The first thing we want to know is whether *Diabetes\_extra* contains the full set of IDs found in *Diabetes*. This is important because if we start introducing NAs into our data, we want to understand why. Luckily, a join can help us wth this.
@@ -809,19 +815,19 @@ anti_join(diabetes, diabetes_extra, by="ID")
 
     ## # A tibble: 8 x 10
     ##      ID Pregnancies Glucose BloodPressure SkinThickness Insulin BMI  
-    ##   <int> <chr>         <int>         <int>         <int>   <int> <chr>
+    ##   <dbl> <chr>         <dbl>         <dbl>         <dbl>   <dbl> <chr>
     ## 1     8 10+             126            90             0       0 Obese
     ## 2    35 0               131             0             0       0 Obese
     ## 3   299 7-9             102            74            40     105 Obese
     ## 4   690 1-3             112            68            22      94 Obese
     ## 5   331 1-3             115            64            22       0 Obese
-    ## 6   477 4-6             129            90             7     326 Norm…
-    ## 7   360 1-3             130            64             0       0 Norm…
+    ## 6   477 4-6             129            90             7     326 Norm~
+    ## 7   360 1-3             130            64             0       0 Norm~
     ## 8   175 7-9             154            78            32       0 Obese
-    ## # … with 3 more variables: DiabetesPedigreeFunction <dbl>, Age <int>,
-    ## #   Diabetes <int>
+    ## # ... with 3 more variables: DiabetesPedigreeFunction <dbl>, Age <dbl>,
+    ## #   Diabetes <dbl>
 
-There are 8 IDs that are in diabetes but not in *diabetes\_extra*. Let's store these "missing" IDs in a variable so we can see what happens to them when we join the datasets.
+There are 8 IDs that are in *diabetes* but not in *diabetes\_extra*. Let's store these "missing" IDs in a variable so we can see what happens to them when we join the datasets.
 
 ``` r
 missingIDs <- anti_join(diabetes, diabetes_extra, by="ID") %>% 
@@ -831,28 +837,28 @@ missingIDs <- anti_join(diabetes, diabetes_extra, by="ID") %>%
 missingIDs <- as.vector(missingIDs$ID) 
 ```
 
-My go to is the `left_join` because it returns all rows from dataset 1 no matter what's in dataset 2, and I really don't want to be losing patients accidently. By default, `left_join` adds all columns from dataset 2 to dataset 1, but if we didn't want that, we could first use the select function on dataset 2 to get the variables we want, and then `%>%` to `left_join`.
+My go to is the `left_join` because it returns all rows from dataset 1 no matter what's in dataset 2, and I really don't want to be losing patients in my master dataset accidently. By default, `left_join` adds all columns from dataset 2 to dataset 1, but if we didn't want that, we could first use `select` on dataset 2 to get only the variables we want, and then `%>%` to a `left_join`.
 
 ``` r
 left_join(diabetes, diabetes_extra, by="ID") %>% 
-      select(ID, Cholesterol, FamilyHistory, ActivityLevel) %>% 
+      select(ID, BloodPressure, BMI, Cholesterol, FamilyHistory, ActivityLevel) %>% 
           arrange(ID)
 ```
 
-    ## # A tibble: 768 x 4
-    ##       ID Cholesterol FamilyHistory ActivityLevel
-    ##    <int>       <int>         <int>         <int>
-    ##  1     1         197             0             4
-    ##  2     2         215             1             1
-    ##  3     3         231             0             2
-    ##  4     4         277             0             2
-    ##  5     5         181             0             2
-    ##  6     6         249             0             4
-    ##  7     7         135             1             2
-    ##  8     8          NA            NA            NA
-    ##  9     9         188             0             2
-    ## 10    10         215             0             5
-    ## # … with 758 more rows
+    ## # A tibble: 768 x 6
+    ##       ID BloodPressure BMI          Cholesterol FamilyHistory ActivityLevel
+    ##    <dbl>         <dbl> <chr>              <dbl>         <dbl>         <dbl>
+    ##  1     1             0 Obese                197             0             4
+    ##  2     2            82 Morbidly Ob~         215             1             1
+    ##  3     3            74 Overweight           231             0             2
+    ##  4     4            78 Overweight           277             0             2
+    ##  5     5            66 Overweight           181             0             2
+    ##  6     6            80 Obese                249             0             4
+    ##  7     7            68 Normal               135             1             2
+    ##  8     8            90 Obese                 NA            NA            NA
+    ##  9     9            54 Normal               188             0             2
+    ## 10    10            68 Obese                215             0             5
+    ## # ... with 758 more rows
 
 ``` r
 # store this to a dataframe of the same name
@@ -869,7 +875,7 @@ diabetes %>%
 
     ## # A tibble: 8 x 4
     ##      ID Cholesterol FamilyHistory ActivityLevel
-    ##   <int>       <int>         <int>         <int>
+    ##   <dbl>       <dbl>         <dbl>         <dbl>
     ## 1     8          NA            NA            NA
     ## 2    35          NA            NA            NA
     ## 3   299          NA            NA            NA
@@ -890,7 +896,7 @@ diabetes %>%
 
     ## # A tibble: 8 x 4
     ##      ID Cholesterol FamilyHistory ActivityLevel
-    ##   <int> <chr>       <chr>         <chr>        
+    ##   <dbl> <chr>       <chr>         <chr>        
     ## 1     8 missing     missing       missing      
     ## 2    35 missing     missing       missing      
     ## 3   299 missing     missing       missing      

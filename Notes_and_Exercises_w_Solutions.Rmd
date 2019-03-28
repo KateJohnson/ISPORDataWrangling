@@ -110,7 +110,7 @@ select(diabetes, Diabetes, everything())
 
 **Exercise:**
 
-- Create a temporary dataframe called *Diab.temp* with the *Diabetes* variable renamed to *Diab.status* and the *Pregancies* variable dropped.
+- Create a temporary dataframe called *Diab.temp*, with the *Diabetes* variable renamed to *Diab.status* and the *Pregancies* variable dropped.
 
 ```{r}
 Diab.temp <- select(diabetes, -Pregnancies, Diab.status=Diabetes)
@@ -253,7 +253,7 @@ diabetes %>%
       select(ID, Glucose, GlucoseDiff)
 ```
 
-- Filter the dataset to include only patients with insluin level not equal to 0, and then create a new variable called *GI.Ratio* that gives the ratio of their glucose to insulin levels
+- Filter the dataset to include only patients with insulin level not equal to 0, and then create a new variable called *GI.Ratio* that gives the ratio of their glucose to insulin levels
 
 ```{r}
 diabetes %>% 
@@ -314,7 +314,7 @@ diabetes %>%
 
 Your turn! 
 
-Your mission is to determine which characteristic (or set of characteristics) differs the most between diabetic and non-diabetic patients. To do this, you'll want to compare variables between diabetes and non-diabetes patients.
+Your mission is to determine which characteristic (or set of characteristics) differs the most between diabetic and non-diabetic patients. We'll flag these variables as being potentially important to include in a future predictive model.
 
 - **(Task 1)** Let's start by picking a few variables that you expect to differ a lot based on diabetes status (and at least one that's continuous, and one that's categorical), and then use a staistic of your choice (for example: mean, median, proportion) to summarise that variable across diabetes categories. 
 
@@ -344,20 +344,22 @@ We have a bit of a problem with units of the continuous variables, don't we? It 
 diabetes %>% 
     mutate(z.Age=scale(Age), z.BP=scale(BloodPressure), z.Glucose= scale(Glucose)) %>% 
       group_by(Diabetes) %>% 
-        summarise(AverageAge=mean(z.Age), AverageBP=mean(z.BP), AverageGlucose= mean(z.Glucose))
+        summarise(AverageAge=mean(z.Age), AverageBP=mean(z.BP), AverageGlucose= mean(z.Glucose)) %>%
+  # optional final step to reshape the data
+          gather(key="Predictor", value="Z.mean", AverageGlucose:AverageAge)
 ```
 
 
-- **(Task 3)** **Bonus:** (For the experienced data wrangler) Do the same as question 2, but this time, scale all the continous variables in the same step, and (in another step) calculate the difference in their mean between diabetes groups. Try to do this **without** explicitly calling the variable names. 
+- **(Task 3)** **Bonus:** (For the experienced data wrangler) Do the same as question 2, but this time, scale all the continous variables in the same step, and (in another step) calculate the difference in their means between diabetes groups. Try to do this **without** explicitly calling the variable names. 
 
-You may find the conditional functions `select_if()`, `mutate_at()` and `summarise_at()`  very helpful here, because some continous variables (ie. ID and Diabetes status), you won't want to scale.
+You may find the conditional functions `select_if()`, `mutate_at()` and `summarise_at()`  very helpful here, because there are some continous variables (ie. ID and Diabetes status), you won't want to scale.
 
 ```{r, warning=FALSE}
 diabetes %>% 
     select_if(is.numeric) %>% 
       mutate_at(vars(-ID,-Diabetes), scale) %>% 
         group_by(Diabetes) %>% 
-          summarise_at(vars(-ID, -Diabetes), mean) %>% 
+          summarise_at(vars(-ID), mean) %>% 
 # you could stop here, but it's hard to compare the difference between groups with the variables spread 
 # out like this, and even harder to plot, so let's gather them
             gather(key="Predictor", value="Z.mean", Glucose:Age) %>%
@@ -387,7 +389,7 @@ The `anti_join` returns all rows from dataset 1 that are not in dataset 2.
 anti_join(diabetes, diabetes_extra, by="ID")
 ```
 
-There are 8 IDs that are in diabetes but not in *diabetes_extra*. Let's store these "missing" IDs in a variable so we can see what happens to them when we join the datasets.
+There are 8 IDs that are in *diabetes* but not in *diabetes_extra*. Let's store these "missing" IDs in a variable so we can see what happens to them when we join the datasets.
 
 ```{r}
 missingIDs <- anti_join(diabetes, diabetes_extra, by="ID") %>% 
@@ -397,11 +399,11 @@ missingIDs <- anti_join(diabetes, diabetes_extra, by="ID") %>%
 missingIDs <- as.vector(missingIDs$ID) 
 ```
 
-My go to is the `left_join` because it returns all rows from dataset 1 no matter what's in dataset 2, and I really don't want to be losing patients accidently. By default, `left_join` adds all columns from dataset 2 to dataset 1, but if we didn't want that, we could first use the select function on dataset 2 to get the variables we want, and then `%>%` to `left_join`.
+My go to is the `left_join` because it returns all rows from dataset 1 no matter what's in dataset 2, and I really don't want to be losing patients in my master dataset accidently. By default, `left_join` adds all columns from dataset 2 to dataset 1, but if we didn't want that, we could first use `select` on dataset 2 to get only the variables we want, and then `%>%` to a `left_join`.
 
 ```{r}
 left_join(diabetes, diabetes_extra, by="ID") %>% 
-      select(ID, Cholesterol, FamilyHistory, ActivityLevel) %>% 
+      select(ID, BloodPressure, BMI, Cholesterol, FamilyHistory, ActivityLevel) %>% 
           arrange(ID)
 
 # store this to a dataframe of the same name
